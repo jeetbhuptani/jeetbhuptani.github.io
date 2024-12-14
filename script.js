@@ -1,3 +1,7 @@
+function nevermind() {
+    document.querySelector('dialog').removeAttribute('open')
+}
+
 function checkOrientation() {
     const warningMessage = document.querySelector('.warning-message');
     if (window.innerHeight > window.innerWidth) {
