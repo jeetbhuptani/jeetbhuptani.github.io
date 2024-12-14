@@ -1,0 +1,312 @@
+{% load static %}
+<!DOCTYPE html>
+<html style="font-size: 16px;" lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta name="keywords" content="Post 6 Headline, Post 5 Headline, Post 4 Headline" />
+    <meta name="description" content="" />
+    <title>home</title>
+    <link rel="stylesheet" href="{% static 'nicepage.css' %}" media="screen" />
+    <link rel="stylesheet" href="{% static 'home.css' %}" media="screen" />
+    <script class="u-script" type="text/javascript" src="{% static 'jquery.js' %}" defer=""></script>
+    <script class="u-script" type="text/javascript" src="{% static 'nicepage.js' %}" defer=""></script>
+    <meta name="generator" content="Nicepage 6.6.3, nicepage.com" />
+    <link id="u-theme-google-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Open+Sans:300,300i,400,400i,500,500i,600,600i,700,700i,800,800i" />
+
+    <script type="application/ld+json">{ "@context": "http://schema.org",
+		"@type": "Organization",
+		"name": "TheCookBook",
+		"logo": "{% static 'images/TCB_transparent.png' %}"
+    }</script>
+    <meta name="theme-color" content="#478ac9" />
+    <meta property="og:title" content="home" />
+    <meta property="og:description" content="" />
+    <meta property="og:type" content="website" />
+    <meta data-intl-tel-input-cdn-path="{% static 'intlTelInput/' %}" />
+  </head>
+  <body data-path-to-root="./" data-include-products="false" class="u-body u-xl-mode" data-lang="en">
+    {% if messages %}
+        {% for message in messages %}
+            <script>alert("{{ message }}");</script>
+        {% endfor %}
+    {% endif %}
+    <header class="u-clearfix u-header u-header" id="sec-2ef3">
+      <div class="u-clearfix u-sheet u-sheet-1">
+        <a href="/" class="u-image u-logo u-image-1" title="home"><img src="{% static 'images/TCB_transparent.png' %}" class="u-logo-image u-logo-image-1" /></a>
+        <nav class="u-menu u-menu-dropdown u-offcanvas u-menu-1">
+          <div class="menu-collapse" style="font-size: 1rem; letter-spacing: 0px;">
+            <a class="u-button-style u-custom-left-right-menu-spacing u-custom-padding-bottom u-custom-top-bottom-menu-spacing u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base" href="#">
+              <svg class="u-svg-link" viewBox="0 0 24 24">
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#menu-hamburger"></use>
+              </svg>
+              <svg class="u-svg-content" version="1.1" id="menu-hamburger" viewBox="0 0 16 16" x="0px" y="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+                <g>
+                  <rect y="1" width="16" height="2"></rect>
+                  <rect y="7" width="16" height="2"></rect>
+                  <rect y="13" width="16" height="2"></rect>
+                </g>
+              </svg>
+            </a>
+          </div>
+          <div class="u-custom-menu u-nav-container">
+            <ul class="u-nav u-unstyled u-nav-1">
+              {% if user.is_authenticated %}
+                <li class="u-nav-item">
+                  <a class="u-button-style u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base" href="/" style="padding: 10px 20px;">Serach Recipes</a>
+                </li>
+              {% endif %}
+              <li class="u-nav-item">
+                <a class="u-button-style u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base" href="/aboutus" style="padding: 10px 20px;">About TCB</a>
+              </li>
+              {% if user.is_authenticated %}
+
+              {% else %}
+                <li class="u-nav-item">
+                  <a class="u-button-style u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base" href="/login" style="padding: 10px 20px;">Login</a>
+                </li>
+              {% endif %}
+              {% if user.is_authenticated %}
+                <li class="u-nav-item">
+                  <a class="u-button-style u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base" style="padding: 10px 20px;">Profile</a><div class="u-nav-popup">
+                    <ul class="u-h-spacing-20 u-nav u-unstyled u-v-spacing-10">
+                      <li class="u-nav-item">
+                        <a class="u-button-style u-nav-link u-white" href="/account">Account</a>
+                      </li>
+                      <li class="u-nav-item">
+                        <a class="u-button-style u-nav-link u-white" href="/urecipe">Upload Recipe</a>
+                      </li>
+                      <li class="u-nav-item">
+                        <a class="u-button-style u-nav-link u-white" href="/logout">Logout</a>
+                      </li>
+                    </ul>
+                  </div>
+                </li>
+              {% endif %}
+            </ul>
+          </div>
+          <div class="u-custom-menu u-nav-container-collapse">
+            <div class="u-black u-container-style u-inner-container-layout u-opacity u-opacity-95 u-sidenav">
+              <div class="u-inner-container-layout u-sidenav-overflow">
+                <div class="u-menu-close"></div>
+                <ul class="u-align-center u-nav u-popupmenu-items u-unstyled u-nav-3">
+                  {% if user.is_authenticated %}
+                    <li class="u-nav-item">
+                      <a class="u-button-style u-nav-link" href="/">Serach Recipes</a>
+                    </li>
+                    <li class="u-nav-item">
+                      <a class="u-button-style u-nav-link" href="aboutus">About TCB</a>
+                    </li>
+                  {% else %}
+                    <li class="u-nav-item">
+                      <a class="u-button-style u-nav-link" href="login">Login</a>
+                    </li>
+                  {% endif %}
+                  <li class="u-nav-item">
+                    <a class="u-button-style u-nav-link">Profile</a><div class="u-nav-popup">
+                      <ul class="u-h-spacing-20 u-nav u-unstyled u-v-spacing-10">
+                        <li class="u-nav-item">
+                          <a class="u-button-style u-nav-link" href="/account">Account</a>
+                        </li>
+                        <li class="u-nav-item">
+                          <a class="u-button-style u-nav-link" href="/urecipe">Upload Recipe</a>
+                        </li>
+                        <li class="u-nav-item">
+                          <a class="u-button-style u-nav-link" href="/logout">Logout</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="u-black u-menu-overlay u-opacity u-opacity-70"></div>
+          </div>
+        </nav>
+      </div>
+    </header>
+    {% if user.is_authenticated %}
+    <form method="post" action="/">
+      {% csrf_token %}
+      <section class="u-clearfix u-grey-75 u-section-1" id="sec-7725">
+        <div class="u-clearfix u-sheet u-valign-middle u-sheet-1">
+          <div class="u-form u-form-1">
+            <form action="/" class="u-clearfix u-form-horizontal u-form-spacing-10 u-inner-form" source="custom" name="form" style="padding: 10px;" method="post">
+              {% csrf_token %}
+              <div redirect = "true" class="u-clearfix u-form-horizontal u-form-spacing-10 u-inner-form" source="custom" name="form" style="padding: 10px;">
+              <div class="u-form-group u-label-top">
+                <label for="email-3a3e" class="u-label">Recipe</label>
+                <input type="text" placeholder="Enter Recipe Name" id="email-3a3e" name="recipe" class="u-input u-input-rectangle"/>
+              </div>
+              <div class="u-form-group u-form-select u-label-top u-form-group-2">
+                <label for="select-2521" class="u-label">Category</label>
+                <div class="u-form-select-wrapper">
+                  <select id="select-2521" name="category" class="u-input u-input-rectangle">
+                    <option value=""></option>
+                    {% for x in category %}
+                    <option value="{{ x.category_id }}" data-calc="">{{ x.category_name }}</option>
+                    {% endfor %}
+                  </select>
+                  <svg class="u-caret u-caret-svg" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 16 16" style="fill:currentColor;" xml:space="preserve">
+                    <polygon class="st0" points="8,12 2,4 14,4 "></polygon>
+                  </svg>
+                </div>
+              </div>
+              <div class="u-form-group u-form-select u-label-top u-form-group-3">
+                <label for="select-1fb8" class="u-label">Cuisine</label>
+                <div class="u-form-select-wrapper">
+                  <select id="select-1fb8" name="cuisine" class="u-input u-input-rectangle">
+                    <option value=""></option>  
+                    {% for x in cuisine %}
+                    <option value="{{ x.cuisine_id }}" data-calc="">{{ x.cuisine_name }}</option>
+                    {% endfor %}
+                  </select>
+                  <svg class="u-caret u-caret-svg" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 16 16" style="fill:currentColor;" xml:space="preserve">
+                    <polygon class="st0" points="8,12 2,4 14,4 "></polygon>
+                  </svg>
+                </div>
+              </div>
+              <div class="u-form-checkbox-group u-form-group u-label-top u-form-group-4">
+                <label class="u-label"></label>
+                <div class="u-form-checkbox-group-wrapper">
+                  <div class="u-input-row">
+                    <input id="field-fc6f" type="checkbox" name="veg" value="True" class="u-field-input" data-calc="true" checked="checked" />
+                    <label class="u-field-label" for="field-fc6f">Veg</label>
+                  </div>
+                  <div class="u-input-row">
+                    <input id="field-8531" type="checkbox" name="non-veg" value="True" class="u-field-input" data-calc="true" checked="checked" />
+                    <label class="u-field-label" for="field-8531">Non-veg</label>
+                  </div>
+                </div>
+              </div>
+              <div class="u-align-left u-form-group u-form-submit u-label-top">
+                <a href="#" class="u-border-none u-btn u-btn-submit u-button-style u-btn-1">Search Recipe</a>
+                <input type="submit" value="submit" class="u-form-control-hidden" />
+              </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+    {% else %}
+      <section class="u-clearfix u-grey-75 u-section-1" id="sec-7725">
+        <div class="u-clearfix u-sheet u-valign-middle u-sheet-1">
+          <div class="u-form u-form-1">
+            <form action="#" class="u-clearfix u-form-horizontal u-form-spacing-10 u-inner-form" source="custom" name="form" style="padding: 10px;" method="post">
+              <div class="u-form-group u-label-top">
+                <label for="email-3a3e" class="u-label">Recipe</label>
+                <input type="text" placeholder="Enter Recipe Name" id="email-3a3e" name="text" class="u-input u-input-rectangle" required="required" readonly />
+              </div>
+              <div class="u-form-group u-form-select u-label-top u-form-group-2">
+                <label for="select-2521" class="u-label">Category</label>
+                <div class="u-form-select-wrapper">
+                  <select id="select-2521" name="select" class="u-input u-input-rectangle">
+                    <option value="Item 1" data-calc="">Item 1</option>
+                    <option value="Item 2" data-calc="">Item 2</option>
+                    <option value="Item 3" data-calc="">Item 3</option>
+                  </select>
+                  <svg class="u-caret u-caret-svg" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 16 16" style="fill:currentColor;" xml:space="preserve">
+                    <polygon class="st0" points="8,12 2,4 14,4 "></polygon>
+                  </svg>
+                </div>
+              </div>
+              <div class="u-form-group u-form-select u-label-top u-form-group-3">
+                <label for="select-1fb8" class="u-label">Cuisine</label>
+                <div class="u-form-select-wrapper">
+                  <select id="select-1fb8" name="select-1" class="u-input u-input-rectangle">
+                    <option value="Item 1" data-calc="">Item 1</option>
+                    <option value="Item 2" data-calc="">Item 2</option>
+                    <option value="Item 3" data-calc="">Item 3</option>
+                  </select>
+                  <svg class="u-caret u-caret-svg" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 16 16" style="fill:currentColor;" xml:space="preserve">
+                    <polygon class="st0" points="8,12 2,4 14,4 "></polygon>
+                  </svg>
+                </div>
+              </div>
+              <div class="u-form-checkbox-group u-form-group u-label-top u-form-group-4">
+                <label class="u-label"></label>
+                <div class="u-form-checkbox-group-wrapper">
+                  <div class="u-input-row">
+                    <input id="field-fc6f" type="checkbox" name="veg" value="True" class="u-field-input" data-calc="true" checked="checked" />
+                    <label class="u-field-label" for="field-fc6f">Veg</label>
+                  </div>
+                  <div class="u-input-row">
+                    <input id="field-8531" type="checkbox" name="nonveg" value="True" class="u-field-input" data-calc="true" checked="checked" />
+                    <label class="u-field-label" for="field-8531">Non-veg</label>
+                  </div>
+                </div>
+              </div>
+              <div class="u-align-left u-form-group u-form-submit u-label-top">
+                <a href="#" class="u-border-none u-btn u-btn-submit u-button-style u-btn-1">Search Recipe</a>
+                <input type="submit" value="submit" class="u-form-control-hidden" disabled />
+              </div>
+              <input type="hidden" value="" name="recaptchaResponse" />
+            </form>
+          </div>
+        </div>
+      </section>
+    {% endif %}
+    {% if user.is_authenticated %}
+    {% if not recipe %}
+      <section class="u-clearfix u-white u-section-2" id="norecipes">
+        <div class="u-clearfix u-sheet u-sheet-1">
+          <p class="u-align-center u-text u-text-1">Search Any Recipe To See Delicious Dishes</p>
+        </div>
+      </section>
+      {% endif %}
+    {% else %}
+      <section class="u-clearfix u-white u-section-2" id="norecipes">
+        <div class="u-clearfix u-sheet u-sheet-1">
+          <p class="u-align-center u-text u-text-1">Login to Search Recipes</p>
+        </div>
+      </section>
+    {% endif %}
+    {% comment %} {% if recipe %} {% endcomment %}
+    <section class="u-clearfix u-section-3" id="recipes">
+      <div class="u-clearfix u-sheet u-valign-middle u-sheet-1">
+        <!-- blog -->
+        <!-- blog_options_json -->
+        <!-- {"type":"Recent","source":"","tags":"","count":""} -->
+        <!-- /blog_options_json -->
+        <div class="u-blog u-container-style u-expanded-width u-blog-1">
+          <div class="u-list-control"></div>
+          <div class="u-repeater u-repeater-1">
+            <!-- blog_post -->
+            {% for x in recipe %}
+            <div class="u-blog-post u-container-style u-repeater-item">
+              <div class="u-container-layout u-similar-container u-container-layout-1">
+                <!-- blog_post_header -->
+                <h2 class="u-blog-control u-text"><a class="u-post-header-link" href="{% url 'vrecipe' recipe_id=x.recipe_id %}">{{ x.recipe_name }}</a></h2><!-- /blog_post_header -->
+                <a class="u-post-header-link" href="{% url 'vrecipe' recipe_id=x.recipe_id %}">
+                  <!-- blog_post_image -->
+                  <img src="{{x.recipe_image}}" alt="" class="u-blog-control u-expanded-width u-image u-image-de  ult u-image-1" /><!-- /blog_post_image -->
+                </a><!-- blog_post_content -->
+                <div class="u-blog-control u-post-content u-text fr-view">by {{x.user.username}}</div>
+                <!-- /blog_post_content -->
+              </div>
+            </div>
+            {% endfor %}
+            
+            <!-- /blog_post -->
+            <!-- blog_post -->
+            <!-- /blog_post -->
+            <!-- blog_post -->
+            <!-- /blog_post -->
+          </div>
+          <div class="u-list-control"></div>
+        </div>
+        <!-- /blog -->
+      </div>
+    </section>
+    {% comment %} {% endif %} {% endcomment %}
+    <footer class="u-align-center u-clearfix u-footer u-grey-80 u-footer" id="sec-2e22">
+      <div class="u-clearfix u-sheet u-sheet-1">
+        <p class="u-align-center u-text u-text-default u-text-1">
+          Copyright @ 2024 thecookbook.com<br />All Rights Reserved
+        </p>
+      </div>
+    </footer>
+    
+  </body>
+</html>

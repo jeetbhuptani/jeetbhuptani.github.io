@@ -1,0 +1,287 @@
+{% load static %}
+<!DOCTYPE html>
+<html style="font-size: 16px;" lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <title>account</title>
+    <link rel="stylesheet" href="{% static 'nicepage.css' %}" media="screen" />
+    <link rel="stylesheet" href="{% static 'account.css' %}" media="screen" />
+    <script class="u-script" type="text/javascript" src="{% static 'jquery.js' %}" defer=""></script>
+    <script class="u-script" type="text/javascript" src="{% static 'nicepage.js' %}" defer=""></script>
+    <meta name="generator" content="Nicepage 6.6.3, nicepage.com" />
+    <link id="u-theme-google-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Open+Sans:300,300i,400,400i,500,500i,600,600i,700,700i,800,800i" />
+    <link id="u-page-google-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Merriweather:300,300i,400,400i,700,700i,900,900i|Montserrat:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i" />
+
+    <script type="application/ld+json">{
+		"@context": "http://schema.org",
+		"@type": "Organization",
+		"name": "TheCookBook",
+		"logo": "{% static 'images/TCB_transparent.png' %}"
+}</script>
+    <meta name="theme-color" content="#478ac9" />
+    <meta property="og:title" content="account" />
+    <meta property="og:description" content="" />
+    <meta property="og:type" content="website" />
+    <meta data-intl-tel-input-cdn-path="{% static 'intlTelInput/' %}" />
+  </head>
+  <body data-path-to-root="./" data-include-products="false" class="u-body u-xl-mode" data-lang="en">
+    {% if messages %}
+      {% for message in messages %}
+        <script>alert("{{ message }}");</script>
+      {% endfor %}
+    {% endif %}
+    <header class="u-clearfix u-header u-header" id="sec-2ef3">
+      <div class="u-clearfix u-sheet u-sheet-1">
+        <a href="/" class="u-image u-logo u-image-1" title="home"><img src="{% static 'images/TCB_transparent.png' %}" class="u-logo-image u-logo-image-1" /></a>
+        <nav class="u-menu u-menu-dropdown u-offcanvas u-menu-1">
+          <div class="menu-collapse" style="font-size: 1rem; letter-spacing: 0px;">
+            <a class="u-button-style u-custom-left-right-menu-spacing u-custom-padding-bottom u-custom-top-bottom-menu-spacing u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base" href="#">
+              <svg class="u-svg-link" viewBox="0 0 24 24">
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#menu-hamburger"></use>
+              </svg>
+              <svg class="u-svg-content" version="1.1" id="menu-hamburger" viewBox="0 0 16 16" x="0px" y="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+                <g>
+                  <rect y="1" width="16" height="2"></rect>
+                  <rect y="7" width="16" height="2"></rect>
+                  <rect y="13" width="16" height="2"></rect>
+                </g>
+              </svg>
+            </a>
+          </div>
+          <div class="u-custom-menu u-nav-container">
+            <ul class="u-nav u-unstyled u-nav-1">
+              {% if user.is_authenticated %}
+                <li class="u-nav-item">
+                  <a class="u-button-style u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base" href="/" style="padding: 10px 20px;">Serach Recipes</a>
+                </li>
+              {% endif %}
+              <li class="u-nav-item">
+                <a class="u-button-style u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base" href="/aboutus" style="padding: 10px 20px;">About TCB</a>
+              </li>
+              {% if user.is_authenticated %}
+
+              {% else %}
+                <li class="u-nav-item">
+                  <a class="u-button-style u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base" href="/login" style="padding: 10px 20px;">Login</a>
+                </li>
+              {% endif %}
+              {% if user.is_authenticated %}
+                <li class="u-nav-item">
+                  <a class="u-button-style u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base" style="padding: 10px 20px;">Profile</a><div class="u-nav-popup">
+                    <ul class="u-h-spacing-20 u-nav u-unstyled u-v-spacing-10">
+                      <li class="u-nav-item">
+                        <a class="u-button-style u-nav-link u-white" href="/account">Account</a>
+                      </li>
+                      <li class="u-nav-item">
+                        <a class="u-button-style u-nav-link u-white" href="/urecipe">Upload Recipe</a>
+                      </li>
+                      <li class="u-nav-item">
+                        <a class="u-button-style u-nav-link u-white" href="/logout">Logout</a>
+                      </li>
+                    </ul>
+                  </div>
+                </li>
+              {% endif %}
+            </ul>
+          </div>
+          <div class="u-custom-menu u-nav-container-collapse">
+            <div class="u-black u-container-style u-inner-container-layout u-opacity u-opacity-95 u-sidenav">
+              <div class="u-inner-container-layout u-sidenav-overflow">
+                <div class="u-menu-close"></div>
+                <ul class="u-align-center u-nav u-popupmenu-items u-unstyled u-nav-3">
+                  {% if user.is_authenticated %}
+                    <li class="u-nav-item">
+                      <a class="u-button-style u-nav-link" href="/">Serach Recipes</a>
+                    </li>
+                    <li class="u-nav-item">
+                      <a class="u-button-style u-nav-link" href="/aboutus">About TCB</a>
+                    </li>
+                  {% else %}
+                    <li class="u-nav-item">
+                      <a class="u-button-style u-nav-link" href="/login">Login</a>
+                    </li>
+                  {% endif %}
+                  <li class="u-nav-item">
+                    <a class="u-button-style u-nav-link">Profile</a><div class="u-nav-popup">
+                      <ul class="u-h-spacing-20 u-nav u-unstyled u-v-spacing-10">
+                        <li class="u-nav-item">
+                          <a class="u-button-style u-nav-link" href="/account">Account</a>
+                        </li>
+                        <li class="u-nav-item">
+                          <a class="u-button-style u-nav-link" href="/urecipe">Upload Recipe</a>
+                        </li>
+                        <li class="u-nav-item">
+                          <a class="u-button-style u-nav-link" href="/logout">Logout</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="u-black u-menu-overlay u-opacity u-opacity-70"></div>
+          </div>
+        </nav>
+      </div>
+    </header>
+    <section class="u-clearfix u-gradient u-section-1" id="sec-0a8d">
+      <div class="u-clearfix u-sheet u-sheet-1">
+        <h3 class="u-align-center u-custom-font u-font-merriweather u-text u-text-default u-text-1">User Details</h3>
+        <div class="u-container-style u-expanded-width-sm u-expanded-width-xs u-group u-palette-5-light-2 u-shape-rectangle u-group-1">
+          <div class="u-container-layout u-container-layout-1">
+            <span class="u-file-icon u-icon u-icon-1" id="toggleButton"><img id="imageToToggle" src="{% static 'images/1250925.png' %}" alt="" /></span>
+            <h6 class="u-custom-font u-font-merriweather u-text u-text-default u-text-2">Username:&nbsp;</h6>
+            <p style="padding-left: 65px;" class="u-align-center-xs u-custom-font u-font-montserrat u-text u-text-default u-text-3">{{ user.username }}</p>
+            <h6 class="u-custom-font u-font-merriweather u-text u-text-default u-text-2">Name:&nbsp;</h6>
+            <p class="u-align-center-xs u-custom-font u-font-montserrat u-text u-text-default u-text-3">{{ user.first_name }} {{ user.last_name }}</p>
+            <h6 class="u-custom-font u-font-merriweather u-text u-text-default u-text-4">Email:&nbsp;</h6>
+            <p class="u-align-center-xs u-custom-font u-font-montserrat u-text u-text-default u-text-5">{{ user.email }}</p>
+            <script>
+              document.addEventListener("DOMContentLoaded", function() {
+                  var toggleButton = document.getElementById("toggleButton");
+                  var imageToToggle = document.getElementById("imageToToggle");
+                  var hiddenSection = document.getElementById("hiddenSection");
+          
+                  toggleButton.addEventListener("click", function() {
+                      if (hiddenSection.style.display === "none") {
+                          hiddenSection.style.display = "block";
+                          // Change image to another one when clicked
+                          imageToToggle.src = "{% static 'images/close.png' %}";
+                      } else {
+                          hiddenSection.style.display = "none";
+                          // Change image back to original one when clicked again
+                          imageToToggle.src = "{% static 'images/1250925.png' %}";
+                      }
+                  });
+              });
+          </script>
+
+            <div id="hiddenSection" style="display: none;" class="u-container-style u-expanded-width u-group u-palette-5-light-2 u-shape-rectangle u-group-2">
+              <div class="u-container-layout u-valign-middle-xs u-container-layout-2">
+                <div class="u-form u-form-1">
+                  <form action="account" redirect="true" class="u-clearfix u-form-horizontal u-form-spacing-15 u-inner-form" style="padding: 15px" source="custom" method="post">
+                    {% csrf_token %}
+                    <div class="u-form-group u-form-name u-label-top">
+                      <label for="name-558c" class="u-label">First Name</label>
+                      <input type="text" value="{{ user.first_name }}" id="name-558c" name="fname" class="u-input u-input-rectangle" required="" />
+                    </div>
+                    <div class="u-form-group u-label-top u-form-group-2">
+                      <label for="text-e35c" class="u-label">Last Name</label>
+                      <input type="text" value="{{ user.last_name }}" id="text-e35c" name="lname" class="u-input u-input-rectangle" />
+                    </div>
+                    <div class="u-form-email u-form-group u-label-top">
+                      <label for="email-558c" class="u-label">Email</label>
+                      <input type="email" value="{{ user.email }}" id="email-558c" name="email" class="u-input u-input-rectangle" required="" />
+                    </div>
+                    <div class="u-form-group u-form-submit u-label-top">
+                      <a href="account" onClick="reloadPage()" class="u-btn u-btn-submit u-button-style">Submit</a>
+                      <input type="submit" value="submit" class="u-form-control-hidden" />
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <script>
+    function reloadPage() {
+      setTimeout(function() {
+        location.reload();
+      }, 1000); }</script>
+    <section class="u-align-center u-clearfix u-gradient u-section-2" id="sec-8f22">
+      <div class="u-clearfix u-sheet u-valign-middle-xs u-sheet-1">
+        <h3 class="u-align-center u-custom-font u-font-merriweather u-text u-text-default u-text-1">Your Recipes</h3><!-- blog -->
+        <!-- blog_options_json -->
+        <!-- {"type":"Recent","source":"","tags":"","count":""} -->
+        <!-- /blog_options_json -->
+        <div class="u-blog u-container-style u-expanded-width u-layout-horizontal u-blog-1">
+          <div class="u-list-control"></div>
+          <div class="u-repeater u-repeater-1">
+            <!-- blog_post -->
+            {% for x in recipe %}
+              <div style="padding-top: 30px;" class="u-blog-post u-container-style u-repeater-item">
+                <div class="u-container-layout u-similar-container u-container-layout-1">
+                  <!-- blog_post_header -->
+                  <h2 class="u-blog-control u-custom-font u-font-merriweather u-text u-text-2"><a class="u-post-header-link" href="blog/post-5.html">{{ x.recipe_name }}</a></h2>
+                  <!-- /blog_post_header -->
+                  <span class="u-file-icon u-icon u-icon-1"><img onclick="deleteRecipe({{x.recipe_id}})" src="{% static 'images/484662.png' %}" alt="" /></span>
+                  <a class="u-post-header-link" href="{% url 'vrecipe' recipe_id=x.recipe_id %}">
+                    <!-- blog_post_image -->
+                    <img src="{{ x.recipe_image }}" alt="" class="u-blog-control u-expanded-width u-image u-image-default u-image-1" /><!-- /blog_post_image -->
+                  </a><!-- blog_post_content -->
+                  <div class="u-blog-control u-custom-font u-font-montserrat u-post-content u-text u-text-3 fr-view">Cuisine: {{ x.cuisine.cuisine_name }}</div>
+                </div>
+              </div>
+            {% endfor %}
+            <script>
+              function deleteRecipe(recipeid) {
+                var confirmDelete = confirm("Are you sure you want to delete this Recipe?");
+                if (confirmDelete) {
+                  window.location.href = "{% url 'delete' recipe_id=0 %}".replace('0',recipeid);
+                } else {
+                  alert("Deletion canceled.");
+                }
+              };
+              </script>
+
+            <!-- /blog_post -->
+            <!-- blog_post -->
+            <!-- /blog_post -->
+            <!-- blog_post -->
+            <!-- /blog_post -->
+            <!-- blog_post -->
+            <!-- /blog_post -->
+          </div>
+          <div class="u-list-control"></div>
+          <a class="u-absolute-vcenter-lg u-absolute-vcenter-md u-absolute-vcenter-xl u-gallery-nav u-gallery-nav-prev u-grey-70 u-icon-circle u-opacity u-opacity-70 u-spacing-10 u-text-white u-gallery-nav-1" href="#" role="button">
+            <span aria-hidden="true">
+              <svg viewBox="0 0 451.847 451.847">
+                <path d="M97.141,225.92c0-8.095,3.091-16.192,9.259-22.366L300.689,9.27c12.359-12.359,32.397-12.359,44.751,0
+c12.354,12.354,12.354,32.388,0,44.748L173.525,225.92l171.903,171.909c12.354,12.354,12.354,32.391,0,44.744
+c-12.354,12.365-32.386,12.365-44.745,0l-194.29-194.281C100.226,242.115,97.141,234.018,97.141,225.92z"></path>
+              </svg>
+            </span>
+            <span class="sr-only">
+              <svg viewBox="0 0 451.847 451.847">
+                <path d="M97.141,225.92c0-8.095,3.091-16.192,9.259-22.366L300.689,9.27c12.359-12.359,32.397-12.359,44.751,0
+c12.354,12.354,12.354,32.388,0,44.748L173.525,225.92l171.903,171.909c12.354,12.354,12.354,32.391,0,44.744
+c-12.354,12.365-32.386,12.365-44.745,0l-194.29-194.281C100.226,242.115,97.141,234.018,97.141,225.92z"></path>
+              </svg>
+            </span>
+          </a>
+          <a class="u-absolute-vcenter-lg u-absolute-vcenter-md u-absolute-vcenter-xl u-gallery-nav u-gallery-nav-next u-grey-70 u-icon-circle u-opacity u-opacity-70 u-spacing-10 u-text-white u-gallery-nav-2" href="#" role="button">
+            <span aria-hidden="true">
+              <svg viewBox="0 0 451.846 451.847">
+                <path d="M345.441,248.292L151.154,442.573c-12.359,12.365-32.397,12.365-44.75,0c-12.354-12.354-12.354-32.391,0-44.744
+L278.318,225.92L106.409,54.017c-12.354-12.359-12.354-32.394,0-44.748c12.354-12.359,32.391-12.359,44.75,0l194.287,194.284
+c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,248.292z"></path>
+              </svg>
+            </span>
+            <span class="sr-only">
+              <svg viewBox="0 0 451.846 451.847">
+                <path d="M345.441,248.292L151.154,442.573c-12.359,12.365-32.397,12.365-44.75,0c-12.354-12.354-12.354-32.391,0-44.744
+L278.318,225.92L106.409,54.017c-12.354-12.359-12.354-32.394,0-44.748c12.354-12.359,32.391-12.359,44.75,0l194.287,194.284
+c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,248.292z"></path>
+              </svg>
+            </span>
+          </a>
+        </div>
+        <!-- /blog -->
+      </div>
+    </section>
+
+    <footer class="u-align-center u-clearfix u-footer u-grey-80 u-footer" id="sec-2e22">
+      <div class="u-clearfix u-sheet u-sheet-1">
+        <p class="u-align-center u-text u-text-default u-text-1">
+          Copyright @ 2024 thecookbook.com<br />All Rights Reserved
+        </p>
+      </div>
+    </footer>
+    
+  </body>
+</html>
