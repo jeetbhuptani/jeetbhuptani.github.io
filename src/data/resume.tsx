@@ -253,7 +253,7 @@ export const DATA = {
   hackathons: [
     {
       title: "DUHacks 4.0",
-      dates: "February 22th -23th, 2022",
+      dates: "February 22th -23th, 2025",
       location: "DDU, Nadiad",
       description:
         "Part of the organizing team. I was responsible for designing the poster for the event and managing the event.",
