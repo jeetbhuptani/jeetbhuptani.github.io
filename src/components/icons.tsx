@@ -220,4 +220,17 @@ export const Icons = {
       />
     </svg>
   ),
+  resume: (props: IconProps) => (
+    <svg
+      role="img"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="currentColor"
+      className="size-8" // Ensures consistent size
+      {...props}
+    >
+      <title>Resume</title>
+      <path d="M6 2C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2H6ZM13 3.5L18.5 9H14C13.4477 9 13 8.55228 13 8V3.5ZM6 4H12V8C12 9.10457 12.8954 10 14 10H18V20H6V4ZM8 12H16V14H8V12ZM8 16H12V18H8V16Z" />
+    </svg>
+  ),
 };

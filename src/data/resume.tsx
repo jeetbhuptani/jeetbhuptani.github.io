@@ -53,12 +53,12 @@ export const DATA = {
 
         navbar: true,
       },
-      // Youtube: {
-      //   name: "Youtube",
-      //   url: "https://dub.sh/dillion-youtube",
-      //   icon: Icons.youtube,
-      //   navbar: true,
-      // },
+      Resume:{
+        name: "Resume",
+        url: "https://drive.google.com/file/d/1HIZ7sCziQqdML4FCJiTe6m4V13HhjNLW/view?usp=sharing",
+        icon: Icons.resume,
+        navbar: true,
+      },
       email: {
         name: "Send Email",
         url: "#",
