@@ -223,10 +223,10 @@ export const Icons = {
   resume: (props: IconProps) => (
     <svg
       role="img"
-      viewBox="0 0 24 24"
+      viewBox="0 2 20 20"
       xmlns="http://www.w3.org/2000/svg"
       fill="currentColor"
-      className="size-8" // Ensures consistent size
+      className="size-8"
       {...props}
     >
       <title>Resume</title>
