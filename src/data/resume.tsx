@@ -85,12 +85,12 @@ export const DATA = {
   ],
   education: [
     {
-      school: "Seventh-Day Adventist (SDA), Ahmedabad",
-      href: "https://www.sdaschoolahmedabad.org/",
-      degree: "Till 10th Grade",
-      logoUrl: "/sda.avif",
-      start: "2008",
-      end: "2020",
+      school: "Dharmsinh Desai University (DDU)",
+      href: "https://www.ddu.ac.in/",
+      degree: "Bachelor of Technology in Computer Engineering",
+      logoUrl: "/ddu.png",
+      start: "2023",
+      end: "2026",
     },
     {
       school: "Government Polytechnic, Ahmedabad",
@@ -101,13 +101,14 @@ export const DATA = {
       end: "2023",
     },
     {
-      school: "Dharmsinh Desai University (DDU)",
-      href: "https://www.ddu.ac.in/",
-      degree: "Bachelor of Technology in Computer Engineering",
-      logoUrl: "/ddu.png",
-      start: "2023",
-      end: "2026",
+      school: "Seventh-Day Adventist (SDA), Ahmedabad",
+      href: "https://www.sdaschoolahmedabad.org/",
+      degree: "Till 10th Grade",
+      logoUrl: "/sda.avif",
+      start: "2008",
+      end: "2020",
     },
+    
   ],
   projects: [
     {
