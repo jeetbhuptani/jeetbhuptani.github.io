@@ -112,6 +112,40 @@ export const DATA = {
   ],
   projects: [
     {
+      title: "Artha AI",
+      href: "https://arthaai-7x8z.onrender.com/",
+      dates: "May 2025 - May 2025",
+      active: true,
+      description:
+        "अर्थ means 'wealth'. Representing the knowledge of wealth in your language. Learn and Analysis finances in your way with Artha AI.",
+      technologies: [
+        "Typescript",
+        "React",
+        "Vite",
+        "Shadcn UI",
+        "JWT",
+        "Express",
+        "TailwindCSS",
+        "Gemini",
+        "MongoDB Atlas",
+      ],
+      links: [
+        {
+          type: "Website",
+          href: "https://arthaai-7x8z.onrender.com",
+          icon: <Icons.globe className="size-3" />,
+        },
+        {
+          type: "Source",
+          href: "https://www.github.com/jeetbhuptani/arthaai",
+          icon: <Icons.github className="size-3" />,
+        }
+      ],
+      image: "",
+      video:
+        "./artha.mp4",
+    },
+    {
       title: "Smart Trip Planner",
       href: "https://smart-trip-planner-v1.vercel.app/",
       dates: "December 2024 - March 2025",
@@ -253,13 +287,35 @@ export const DATA = {
   ],
   hackathons: [
     {
+      title: "Ignosis Hackathon",
+      dates: "May 6th - 8th, 2025",
+      location: "Online",
+      description:
+        "Internal Hackathon for DDU students organized by Ignosis. I developed Artha AI during this hackathon.",
+      image:
+        "https://ignosis.ai/wp-content/uploads/2024/06/Ignosis-Logo.svg",
+      links: [{
+        title: "Ignosis",
+        icon: <Icons.globe className="h-4 w-4" />,
+        href: "https://ignosis.ai//",
+      },{
+        title: "Github",
+        icon: <Icons.globe className="h-4 w-4" />,
+        href: "https://github.com/jeetbhuptani/arthaai",
+      },{
+        title: "Artha AI",
+        icon: <Icons.globe className="h-4 w-4" />,
+        href: "https://arthaai-7x8z.onrender.com/",
+      },],
+    },
+    {
       title: "DUHacks 4.0",
       dates: "February 22th -23th, 2025",
       location: "DDU, Nadiad",
       description:
         "Part of the organizing team. I was responsible for designing the poster for the event and managing the event.",
       image:
-        "https://duhacks.tech/_next/image?url=%2Fassets%2Fimages%2Fduhacks.png&w=128&q=75",
+        "./duhacks.png",
       links: [{
         title: "Duhacks",
         icon: <Icons.globe className="h-4 w-4" />,
@@ -273,7 +329,7 @@ export const DATA = {
       description:
         "Developed a web application which helps restaurants to give leftover food to the needy people.",
       image:
-        "https://duhacks.tech/_next/image?url=%2Fassets%2Fimages%2Fduhacks.png&w=128&q=75",
+        "duhacks.png",
       links: [
         {
           title: "Github",
