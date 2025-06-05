@@ -1,4 +1,5 @@
 import { Icons } from "@/components/icons";
+import { Certificate } from "crypto";
 import { HomeIcon, NotebookIcon } from "lucide-react";
 
 export const DATA = {
@@ -8,7 +9,15 @@ export const DATA = {
   location: "Ahmedabad, GUJ, India",
   locationLink: "https://www.google.com/maps/place/ahmedabad",
   description:
-    "Technologist and Software Engineer. I am all about building products that solve real-world problems. I love to learn new technologies and apply them to my projects.",
+    `A ${(() => { const birthDate = new Date('2004-08-01');
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDifference = today.getMonth() - birthDate.getMonth();
+      if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      return age;
+    })()} years old Computer Engineer. I am all about building products. I love to learn new technologies and apply them to my projects.`,
   summary:
     "I have six years of studying experience with hands on in this field. In the past, [I pursued a diploma in computer engineering](/#education) and [part of 2 hackathons for fun](/#hackathons). I also had the pleasure of being a part of a club [GDG DDU](https://gdg.community.dev/gdg-on-campus-dharmsinh-desai-university-nadiad-india/).",
   avatarUrl: "/jeet.jpg",
@@ -16,17 +25,20 @@ export const DATA = {
     "C++",
     "Java",
     "Python",
-    "JavaScript",
-    "TypeScript",
-    "MERN/MEAN",
+    "JS/TS",
+    "Spring",
+    "MERN",
     ".NET",
     "GCP",
+    "AWS",
     "Docker",
+    "ML",
     "Canva",
   ],
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
     { href: "/blog", icon: NotebookIcon, label: "Blog" },
+    { href: "/certificate", icon: Icons.certificate , label: "Certificates" },
   ],
   contact: {
     email: "jeet.work.id@gmail.com",
@@ -55,13 +67,13 @@ export const DATA = {
       },
       Resume:{
         name: "Resume",
-        url: "https://drive.google.com/file/d/1AuwciYY00qu9sL6WrHhBOjEJWN331Fo8/view?usp=sharing",
+        url: "https://bit.ly/jeetbhuptani-resume",
         icon: Icons.resume,
         navbar: true,
       },
       email: {
         name: "Send Email",
-        url: "#",
+        url: "mailto:jeet.work.id@gmail.com",
         icon: Icons.email,
 
         navbar: false,
@@ -287,13 +299,38 @@ export const DATA = {
   ],
   hackathons: [
     {
+      title: "Holboxathon",
+      dates: "May 24th - 26th, 2025",
+      location: "Online",
+      description:
+        "AI Hackathon organized by Holbox AI. Me and my team developed Intellicruit, an AI-powered recruitment platform that streamlines the hiring process by automating candidate screening and scoring.",
+      image: "holbox.png",
+      links: [
+        {
+          title: "HolboxAI",
+          icon: <Icons.globe className="h-4 w-4" />,
+          href: "https://www.holbox.ai/",
+        },
+        {
+          title: "Github",
+          icon: <Icons.globe className="h-4 w-4" />,
+          href: "https://github.com/MILANBHADARKA/intellicruit",
+        },
+        {
+          title: "Devfolio",
+          icon: <img className="h-4 w-4" src="./devfolio.svg" />,
+          href: "https://devfolio.co/projects/intellicruit-8ab9",
+        },
+      ],
+    },
+    {
       title: "Ignosis Hackathon",
       dates: "May 6th - 8th, 2025",
       location: "Online",
       description:
         "Internal Hackathon for DDU students organized by Ignosis. I developed Artha AI during this hackathon.",
       image:
-        "https://ignosis.ai/wp-content/uploads/2024/06/Ignosis-Logo.svg",
+        "ignosis.png",
       links: [{
         title: "Ignosis",
         icon: <Icons.globe className="h-4 w-4" />,
@@ -344,4 +381,66 @@ export const DATA = {
       ],
     },
   ],
+  certificates:[
+    {
+      title: "AWS Academy Graduate - AWS Academy Machine Learning Foundations",
+      issuer: "Amazon Web Services",
+      date: "June 2025",
+      description: "Demonstrates foundational knowledge of machine learning concepts, AWS ML services, and best practices for implementing ML solutions in the cloud.",
+      image: "/certificates/aws-ml-foundations.png",
+      credentialId: "",
+      links: [
+        {
+          type: "Certificate",
+          href: "https://www.credly.com/badges/07d71884-6bc3-46b0-9b37-89afe39261e4/public_url",
+          icon: <Icons.globe className="size-3" />,
+        },
+      ],
+    },
+    {
+      title: "Disaster Risk Monitoring Using Satellite Imagery",
+      issuer: "NVIDIA",
+      date: "November 2024",
+      description: "Learned how to build and deploy a deep learning model to automate the detection of flood events using satellite imagery from the Sentinel-1 satellite.",
+      image: "/certificates/disaster-risk-monitoring.png",
+      credentialId: "dzSE06yTR_2M4K1o3H4OXg",
+      links: [
+        {
+          type: "Certificate",
+          href: "https://learn.nvidia.com/certificates?id=dzSE06yTR_2M4K1o3H4OXg",
+          icon: <Icons.globe className="size-3" />,
+        },
+      ],
+    },
+    {
+      title: "AWS Academy Graduate - AWS Academy Cloud Foundations",
+      issuer: "Amazon Web Services",
+      date: "June 2025",
+      description: "Demonstrates foundational knowledge of cloud computing concepts, AWS services, and best practices for deploying and managing applications in the cloud.",
+      image: "/certificates/aws-cloud-foundations.png",
+      credentialId: "",
+      links: [
+        {
+          type: "Certificate",
+          href: "https://www.credly.com/badges/e7eff2c3-8bd3-40bb-801b-74c49e83e2db/public_url",
+          icon: <Icons.globe className="size-3" />,
+        },
+      ],
+    },
+    {
+      title: "Responsive Web Design",
+      issuer: "freeCodeCamp",
+      date: "June 2024",
+      description: "Demonstrates knowledge of responsive web design principles, including fluid grids, flexible images, and media queries.",
+      image: "/certificates/responsive-web-design.png",
+      credentialId: "jeet_bhuptani-rwd",
+      links: [
+        {
+          type: "Certificate",
+          href: "https://www.freecodecamp.org/certification/Jeet_Bhuptani/responsive-web-design",
+          icon: <Icons.globe className="size-3" />,
+        },
+      ],
+    },
+  ]
 } as const;
