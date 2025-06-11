@@ -17,9 +17,9 @@ export const DATA = {
         age--;
       }
       return age;
-    })()} years old Computer Engineer. I am all about building products. I love to learn new technologies and apply them to my projects.`,
+    })()} years old Computer Engineer. I am all about building ~~projects~~ **products**. I love to learn new technologies and apply them to my products.`,
   summary:
-    "I have six years of studying experience with hands on in this field. In the past, [I pursued a diploma in computer engineering](/#education) and [part of 2 hackathons for fun](/#hackathons). I also had the pleasure of being a part of a club [GDG DDU](https://gdg.community.dev/gdg-on-campus-dharmsinh-desai-university-nadiad-india/).",
+    "I have six years of studying experience with hands on in this field. In the past, [I pursued a diploma in computer engineering](/#education) and [part of 4 hackathons for fun & learning](/#hackathons). I also had the pleasure of being a part of a club [GDG DDU](https://gdg.community.dev/gdg-on-campus-dharmsinh-desai-university-nadiad-india/).",
   avatarUrl: "/jeet.jpg",
   skills: [
     "C++",
@@ -307,11 +307,6 @@ export const DATA = {
       image: "holbox.png",
       links: [
         {
-          title: "HolboxAI",
-          icon: <Icons.globe className="h-4 w-4" />,
-          href: "https://www.holbox.ai/",
-        },
-        {
           title: "Github",
           icon: <Icons.globe className="h-4 w-4" />,
           href: "https://github.com/MILANBHADARKA/intellicruit",
@@ -331,11 +326,8 @@ export const DATA = {
         "Internal Hackathon for DDU students organized by Ignosis. I developed Artha AI during this hackathon.",
       image:
         "ignosis.png",
-      links: [{
-        title: "Ignosis",
-        icon: <Icons.globe className="h-4 w-4" />,
-        href: "https://ignosis.ai//",
-      },{
+      links: [
+      {
         title: "Github",
         icon: <Icons.globe className="h-4 w-4" />,
         href: "https://github.com/jeetbhuptani/arthaai",
