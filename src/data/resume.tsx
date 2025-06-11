@@ -17,7 +17,7 @@ export const DATA = {
         age--;
       }
       return age;
-    })()} years old Computer Engineer. I am all about building <s>projects</s> <strong>products<strong>. I love to learn new technologies and apply them to my products.`,
+    })()} years old Computer Engineer. I am all about building <s>projects</s> <strong>products</strong>. I love to learn new technologies and apply them to my products.`,
   summary:
     "I have six years of studying experience with hands on in this field. In the past, [I pursued a diploma in computer engineering](/#education) and [part of 4 hackathons for fun & learning](/#hackathons). I also had the pleasure of being a part of a club [GDG DDU](https://gdg.community.dev/gdg-on-campus-dharmsinh-desai-university-nadiad-india/).",
   avatarUrl: "/jeet.jpg",
