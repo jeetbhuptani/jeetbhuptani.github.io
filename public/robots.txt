@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://jeetbhuptani.me/sitemap.xml

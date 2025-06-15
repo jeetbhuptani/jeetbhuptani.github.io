@@ -1,6 +1,7 @@
 import { Icons } from "@/components/icons";
 import { Certificate } from "crypto";
 import { HomeIcon, NotebookIcon } from "lucide-react";
+import Image from "next/image";
 
 export const DATA = {
   name: "Jeet Bhuptani",
@@ -313,7 +314,7 @@ export const DATA = {
         },
         {
           title: "Devfolio",
-          icon: <img className="h-4 w-4" src="./devfolio.svg" />,
+          icon: <Image src="/devfolio.svg" alt="Devfolio Logo" width={16}  height={16} className="h-4 w-4" />,
           href: "https://devfolio.co/projects/intellicruit-8ab9",
         },
       ],
@@ -367,7 +368,7 @@ export const DATA = {
         },
         {
           title: "Devfolio",
-          icon: <img className="h-4 w-4" src="./devfolio.svg" />,
+          icon: <Image src="/devfolio.svg" alt="Devfolio Logo" width={16}  height={16} className="h-4 w-4" />,
           href: "https://devfolio.co/projects/nourishnet-8909",
         },
       ],

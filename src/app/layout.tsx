@@ -18,10 +18,12 @@ export const metadata: Metadata = {
     default: DATA.name,
     template: `%s | ${DATA.name}`,
   },
-  description: DATA.description,
+  description:
+    "Computer Engineer who is all about building real-world software products and experimenting with modern technologies.",
   openGraph: {
     title: `${DATA.name}`,
-    description: DATA.description,
+    description:
+      "Computer Engineer who is all about building real-world software products and experimenting with modern technologies.",
     url: DATA.url,
     siteName: `${DATA.name}`,
     locale: "en_US",
@@ -55,6 +57,29 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/favicon.png" />
+        <meta name="theme-color" content="#000000" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              name: "Jeet Bhuptani",
+              url: "https://jeetbhuptani.me",
+              sameAs: [
+                "https://github.com/jeetbhuptani",
+                "https://linkedin.com/in/YOUR_LINKEDIN_HERE",
+              ],
+              jobTitle: "Computer Engineer",
+              description:
+                "Jeet Bhuptani is a Computer Engineer passionate about building real-world software products and experimenting with new technologies.",
+            }),
+          }}
+        />
+      </head>
+
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased max-w-2xl mx-auto py-12 sm:py-24 px-6",
