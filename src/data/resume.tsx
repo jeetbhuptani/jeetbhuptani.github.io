@@ -85,16 +85,16 @@ export const DATA = {
 
   work: [
     {
-      company: "Simform",
-      href: "https://www.simform.com/",
+      company: "Ignosis",
+      href: "https://www.ignosis.ai/",
       badges: [],
       location: "Ahmedabad",
-      title: "Trainee",
-      logoUrl: "/simform.png",
-      start: "Jan 2026",
-      end: "Jun 2026",
+      title: "SDE Intern",
+      logoUrl: "/ignosis.png",
+      start: "Dec 2025",
+      end: "May 2026",
       description:
-        "Upcoming Trainee (Intern) where I will learn and work on assigned and real world projects",
+        "SDE Intern where I will learn and work on building the next great Financial + Agentic AI products.",
     },
   ],
   volunteer: [
