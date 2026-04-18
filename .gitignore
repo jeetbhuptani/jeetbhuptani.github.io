@@ -34,3 +34,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+/dillionverma-portfolio-6ab0cf8
+/github-stats-terminal-style
+/temp
