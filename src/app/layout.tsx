@@ -68,8 +68,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/favicon.png" />
-        <meta name="theme-color" content="#000000" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <meta name="theme-color" content="#100e0c" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
