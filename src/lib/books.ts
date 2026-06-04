@@ -57,7 +57,7 @@ export function normalizeHardcover(data: any): Book[] {
 
 const SHELF_QUERY = `query Shelf {
   me {
-    user_books(where: { status_id: { _in: [2, 3] } }) {
+    user_books(where: { status_id: { _in: [2, 3, 5] } }) {
       status_id
       book {
         title
@@ -97,7 +97,8 @@ export async function getBookshelf(): Promise<ShelfResult> {
         Authorization: token.startsWith("Bearer ") ? token : `Bearer ${token}`,
       },
       body: JSON.stringify({ query: SHELF_QUERY }),
-      next: { revalidate: 86400 },
+      next: { revalidate: 3600 }, // shelf reflects Hardcover changes within ~1h
+
     });
     if (!res.ok) throw new Error(`Hardcover ${res.status}`);
     const json = await res.json();
