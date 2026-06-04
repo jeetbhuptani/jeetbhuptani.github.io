@@ -34,7 +34,7 @@ export function TocRail({ headings }: { headings: Heading[] }) {
   return (
     <nav
       aria-label="On this page"
-      className="fixed right-5 top-1/2 z-40 hidden w-44 -translate-y-1/2 flex-col gap-2.5 xl:flex"
+      className="fixed right-5 top-28 z-40 hidden w-44 flex-col gap-2.5 xl:flex"
     >
       <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
         On this page
