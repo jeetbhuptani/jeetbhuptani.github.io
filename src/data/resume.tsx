@@ -84,12 +84,24 @@ export const DATA = {
       href: "https://www.ignosis.ai/",
       badges: [],
       location: "Ahmedabad",
+      title: "Software Engineer",
+      logoUrl: "/ignosis.png",
+      start: "Jun 2026",
+      end: "Present",
+      description:
+        "Building AI-native products for the BFSI space — agentic collections orchestration and a compliance-first voice-AI platform on top of consent-based financial data.",
+    },
+    {
+      company: "Ignosis",
+      href: "https://www.ignosis.ai/",
+      badges: [],
+      location: "Ahmedabad",
       title: "SDE Intern",
       logoUrl: "/ignosis.png",
       start: "Dec 2025",
       end: "May 2026",
       description:
-        "SDE Intern where I will learn and work on building the next great Financial + Agentic AI products.",
+        "Joined as an intern building Financial + Agentic AI products, then converted to a full-time Software Engineer.",
     },
   ],
   volunteer: [
@@ -146,6 +158,57 @@ export const DATA = {
     
   ],
   projects: [
+    {
+      title: "E2E AI-Native Collections",
+      href: "https://www.ignosis.ai/",
+      dates: "2026 — Present · Ignosis",
+      active: true,
+      motif: "collections",
+      description:
+        "An end-to-end, AI-native debt-collections platform: autonomous agents orchestrate multi-channel borrower outreach (voice, chat, nudges) on top of consent-based financial data, driving campaign decisions in real time. Capability overview — built at Ignosis; no confidential detail shown.",
+      technologies: [
+        "Java",
+        "Spring Boot",
+        "AI Agents",
+        "Account Aggregator",
+        "BFSI",
+        "Microservices",
+      ],
+      links: [
+        {
+          type: "Ignosis",
+          href: "https://www.ignosis.ai/",
+          icon: <Icons.globe className="size-3" />,
+        },
+      ],
+      image: "",
+      video: "",
+    },
+    {
+      title: "BFSI-Compliant VoiceAI Platform",
+      href: "https://www.ignosis.ai/",
+      dates: "2026 — Present · Ignosis",
+      active: true,
+      motif: "voice",
+      description:
+        "A compliance-first voice-AI system for regulated financial workflows — automated outbound calls with real-time speech, guardrails, and auditable conversation flows. Capability overview — built at Ignosis; no confidential detail shown.",
+      technologies: [
+        "Voice AI",
+        "LLMs",
+        "Telephony",
+        "Real-time Speech",
+        "Compliance",
+      ],
+      links: [
+        {
+          type: "Ignosis",
+          href: "https://www.ignosis.ai/",
+          icon: <Icons.globe className="size-3" />,
+        },
+      ],
+      image: "",
+      video: "",
+    },
     {
       title: "Artha AI",
       href: "https://arthaai-7x8z.onrender.com/",

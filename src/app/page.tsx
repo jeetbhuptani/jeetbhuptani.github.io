@@ -185,6 +185,7 @@ export default function Page() {
                   tags={p.technologies}
                   image={p.image}
                   video={p.video}
+                  motif={"motif" in p ? p.motif : undefined}
                   links={p.links}
                 />
               </StaggerItem>

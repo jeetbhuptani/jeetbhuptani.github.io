@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { ShowcaseMotif } from "@/components/showcase-motif";
 
 type ProjectLink = { type: string; href: string; icon?: React.ReactNode };
 
@@ -17,6 +18,7 @@ export function ProjectCard({
   tags,
   image,
   video,
+  motif,
   links,
 }: {
   title: string;
@@ -26,11 +28,14 @@ export function ProjectCard({
   tags?: readonly string[];
   image?: string;
   video?: string;
+  motif?: "collections" | "voice";
   links?: readonly ProjectLink[];
 }) {
   return (
     <div className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors duration-300 hover:border-brand/50">
-      {video ? (
+      {motif ? (
+        <ShowcaseMotif variant={motif} />
+      ) : video ? (
         <video
           src={video}
           autoPlay
