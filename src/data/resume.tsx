@@ -9,16 +9,11 @@ export const DATA = {
   url: "https://www.github.com.jeetbhuptani",
   location: "Ahmedabad, GUJ, India",
   locationLink: "https://www.google.com/maps/place/ahmedabad",
+  birthDate: "2004-08-01",
+  // Age is rendered live in the hero via <Age birth={DATA.birthDate} />; this
+  // string is the age-free fallback used for SEO/meta and non-hero contexts.
   description:
-    `A ${(() => { const birthDate = new Date('2004-08-01');
-      const today = new Date();
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const monthDifference = today.getMonth() - birthDate.getMonth();
-      if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
-      return age;
-    })()} years young Computer Engineer. I am all about building <s>projects</s> <strong>products</strong>. I love to learn new technologies and apply them to my products.`,
+    "Computer Engineer all about building products, not just projects — I love learning new technologies and shipping them.",
   summary:
     "I have six years of studying experience with hands on in this field. In the past, [I pursued a diploma in computer engineering](/#education) and [part of 4 hackathons for fun & learning](/#hackathons). I also had the pleasure of being a part of a club [GDG DDU](https://gdg.community.dev/gdg-on-campus-dharmsinh-desai-university-nadiad-india/).",
   avatarUrl: "/jeet.jpg",
