@@ -17,7 +17,7 @@ For the contributions graph + pinned repos.
 3. Copy the token.
 
 ```
-GITHUB_TOKEN=github_pat_xxx
+GITHUB_TOKEN=
 ```
 
 ## 2. Hardcover (books)
@@ -28,7 +28,7 @@ For the "currently reading" shelf.
 2. Copy the bearer token shown at the top (it may already include `Bearer ` — keep just the token part).
 
 ```
-HARDCOVER_API_TOKEN=xxx
+HARDCOVER_API_TOKEN=
 ```
 
 > Note: Hardcover tokens expire ~yearly (reset Jan 1). Set a reminder to refresh.
@@ -45,8 +45,8 @@ You mint a **refresh token once**; it then lasts indefinitely.
    the auth page, you approve, and it prints your **refresh token**.
 
 ```
-SPOTIFY_CLIENT_ID=xxx
-SPOTIFY_CLIENT_SECRET=xxx
+SPOTIFY_CLIENT_ID=
+SPOTIFY_CLIENT_SECRET=
 SPOTIFY_REFRESH_TOKEN=xxx   # minted via the script in step 2
 ```
 

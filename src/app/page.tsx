@@ -6,6 +6,7 @@ import { Magnetic } from "@/components/motion/magnetic";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/motion/reveal";
 import { ProjectCard } from "@/components/project-card";
 import { Section } from "@/components/section";
+import { SocialsHub } from "@/components/widgets/socials-hub";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DATA } from "@/data/resume";
 import Link from "next/link";
@@ -168,6 +169,13 @@ export default function Page() {
               </StaggerItem>
             ))}
           </StaggerGroup>
+        </Section>
+      </Reveal>
+
+      {/* Currently — live account views */}
+      <Reveal>
+        <Section id="now" label="Currently">
+          <SocialsHub />
         </Section>
       </Reveal>
 
