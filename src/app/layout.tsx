@@ -76,13 +76,15 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Person",
-              name: "Jeet Bhuptani",
-              url: "https://jeetbhuptani.me",
+              name: DATA.name,
+              url: DATA.url,
               sameAs: [
-                "https://github.com/jeetbhuptani",
-                "https://linkedin.com/in/YOUR_LINKEDIN_HERE",
+                DATA.contact.social.GitHub.url,
+                DATA.contact.social.LinkedIn.url,
+                DATA.contact.social.X.url,
               ],
-              jobTitle: "Computer Engineer",
+              jobTitle: "Software Engineer",
+              worksFor: { "@type": "Organization", name: "Ignosis" },
               description:
                 "Jeet Bhuptani is a Computer Engineer passionate about building real-world software products and experimenting with new technologies.",
             }),

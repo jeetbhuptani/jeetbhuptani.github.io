@@ -6,7 +6,7 @@ import Image from "next/image";
 export const DATA = {
   name: "Jeet Bhuptani",
   initials: "JB",
-  url: "https://www.github.com.jeetbhuptani",
+  url: "https://jeetbhuptani.me",
   location: "Ahmedabad, GUJ, India",
   locationLink: "https://www.google.com/maps/place/ahmedabad",
   birthDate: "2004-08-01",
@@ -15,7 +15,7 @@ export const DATA = {
   description:
     "Computer Engineer all about building products, not just projects — I love learning new technologies and shipping them.",
   summary:
-    "I have six years of studying experience with hands on in this field. In the past, [I pursued a diploma in computer engineering](/#education) and [part of 4 hackathons for fun & learning](/#hackathons). I also had the pleasure of being a part of a club [GDG DDU](https://gdg.community.dev/gdg-on-campus-dharmsinh-desai-university-nadiad-india/).",
+    "I hold a [B.Tech in Computer Engineering](/#education) from Dharmsinh Desai University, after a diploma in computer engineering — six years of hands-on study in the field. Along the way I was [part of 4 hackathons for fun & learning](/#hackathons) and had the pleasure of helping run [GDG DDU](https://gdg.community.dev/gdg-on-campus-dharmsinh-desai-university-nadiad-india/).",
   avatarUrl: "/jeet.jpg",
   // Instagram is embed-only (no API/token). Paste public post permalinks here —
   // creator posts first, then personal. Empty = the Instagram tile is omitted.
