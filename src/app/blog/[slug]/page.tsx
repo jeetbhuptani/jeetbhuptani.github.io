@@ -1,5 +1,6 @@
 import { getBlogPosts, getPost } from "@/data/blog";
 import { DATA } from "@/data/resume";
+import { BlogIndexRail } from "@/components/blog-index-rail";
 import { Reveal } from "@/components/motion/reveal";
 import { extractHeadings, readingTime } from "@/lib/blog-utils";
 import { formatDate } from "@/lib/utils";
@@ -48,6 +49,10 @@ export default async function Blog({ params }: { params: { slug: string } }) {
   const post = await getPost(params.slug);
   if (!post) notFound();
 
+  const allPosts = (await getBlogPosts()).sort(
+    (a, b) =>
+      new Date(b.metadata.publishedAt).getTime() - new Date(a.metadata.publishedAt).getTime()
+  );
   const headings = extractHeadings(post.source);
   const minutes = readingTime(post.source);
   const ogImage = post.metadata.image
@@ -56,6 +61,7 @@ export default async function Blog({ params }: { params: { slug: string } }) {
 
   return (
     <main className="flex flex-col gap-8">
+      <BlogIndexRail posts={allPosts} current={post.slug} />
       <script
         type="application/ld+json"
         suppressHydrationWarning

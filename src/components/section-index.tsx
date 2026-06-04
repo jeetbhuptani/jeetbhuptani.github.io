@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 const SECTIONS = [
   { id: "hero", label: "top" },
@@ -20,8 +21,11 @@ const SECTIONS = [
  */
 export function SectionIndex() {
   const [active, setActive] = useState("hero");
+  const pathname = usePathname();
+  const onHome = pathname === "/";
 
   useEffect(() => {
+    if (!onHome) return;
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
@@ -36,12 +40,14 @@ export function SectionIndex() {
       if (el) observer.observe(el);
     });
     return () => observer.disconnect();
-  }, []);
+  }, [onHome]);
 
   const jump = (id: string) => {
     if (id === "hero") window.scrollTo({ top: 0, behavior: "smooth" });
     else document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
+  if (!onHome) return null;
 
   return (
     <nav
