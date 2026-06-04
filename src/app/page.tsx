@@ -1,5 +1,5 @@
 import { Age } from "@/components/age";
-import { AsciiAvatar } from "@/components/ascii-avatar";
+import { ASCII_AVATAR } from "@/data/ascii-avatar";
 import { ExperienceTimeline, type TimelineItem } from "@/components/experience-timeline";
 import { HackathonCard } from "@/components/hackathon-card";
 import { ReactiveHero } from "@/components/hero/reactive-hero";
@@ -78,7 +78,12 @@ export default function Page() {
             </Reveal>
           </div>
           <Reveal delay={0.1}>
-            <AsciiAvatar src={DATA.avatarUrl} alt={DATA.name} />
+            <pre
+              aria-label={`ASCII portrait of ${DATA.name}`}
+              className="w-fit shrink-0 overflow-hidden rounded-xl border border-border bg-card p-1.5 font-mono text-[2.5px] leading-[2.5px] text-foreground sm:text-[3px] sm:leading-[3px]"
+            >
+              {ASCII_AVATAR}
+            </pre>
           </Reveal>
         </div>
 
