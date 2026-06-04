@@ -80,7 +80,7 @@ export default function Page() {
           <Reveal delay={0.1}>
             <pre
               aria-label={`ASCII portrait of ${DATA.name}`}
-              className="w-fit shrink-0 overflow-hidden rounded-xl border border-border bg-card p-1.5 font-mono text-[2.5px] leading-[2.5px] text-foreground sm:text-[3px] sm:leading-[3px]"
+              className="w-fit shrink-0 overflow-hidden rounded-xl border border-border bg-card p-1.5 font-mono text-[3px] leading-[3px] text-foreground sm:text-[3.6px] sm:leading-[3.6px]"
             >
               {ASCII_AVATAR}
             </pre>
