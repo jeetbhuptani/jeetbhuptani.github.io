@@ -2,6 +2,7 @@ import { Age } from "@/components/age";
 import { ExperienceItem } from "@/components/experience-item";
 import { HackathonCard } from "@/components/hackathon-card";
 import { ReactiveHero } from "@/components/hero/reactive-hero";
+import { Wave } from "@/components/hero/wave";
 import { Magnetic } from "@/components/motion/magnetic";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/motion/reveal";
 import { ProjectCard } from "@/components/project-card";
@@ -41,11 +42,10 @@ export default function Page() {
         <div className="mt-4 flex items-start justify-between gap-6">
           <div className="flex flex-1 flex-col gap-4">
             <Reveal delay={0.05}>
-              <h1 className="text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
+              <h1 className="text-glow text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
                 Jeet{" "}
-                <span className="font-serif font-normal italic text-brand">
-                  Bhuptani
-                </span>
+                <span className="font-serif font-normal italic">Bhuptani</span>{" "}
+                <Wave />
               </h1>
             </Reveal>
             <Reveal delay={0.12}>
@@ -182,9 +182,9 @@ export default function Page() {
       {/* Projects */}
       <Reveal>
         <Section id="projects" label="Projects" title="Things I’ve built">
-          <StaggerGroup className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="-mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 [-ms-overflow-style:none] [mask-image:linear-gradient(to_right,transparent,black_1.5rem,black_calc(100%-1.5rem),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {DATA.projects.map((p) => (
-              <StaggerItem key={p.title}>
+              <div key={p.title} className="w-[280px] shrink-0 snap-start sm:w-[320px]">
                 <ProjectCard
                   href={p.href}
                   title={p.title}
@@ -196,9 +196,12 @@ export default function Page() {
                   motif={"motif" in p ? p.motif : undefined}
                   links={p.links}
                 />
-              </StaggerItem>
+              </div>
             ))}
-          </StaggerGroup>
+          </div>
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+            scroll →
+          </p>
         </Section>
       </Reveal>
 

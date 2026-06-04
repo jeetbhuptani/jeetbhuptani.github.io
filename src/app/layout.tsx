@@ -2,6 +2,8 @@ import Navbar from "@/components/navbar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LenisProvider } from "@/components/providers/lenis-provider";
 import { MagneticCursor } from "@/components/cursor/magnetic-cursor";
+import { ClickRipple } from "@/components/click-ripple";
+import { CommandMenu } from "@/components/command-menu";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DATA } from "@/data/resume";
 import { cn } from "@/lib/utils";
@@ -106,6 +108,8 @@ export default function RootLayout({
               <Navbar />
             </LenisProvider>
             <MagneticCursor />
+            <ClickRipple />
+            <CommandMenu />
           </TooltipProvider>
         </ThemeProvider>
       </body>

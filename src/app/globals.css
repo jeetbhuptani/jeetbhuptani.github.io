@@ -31,10 +31,10 @@
 
       --border: 30 14% 86%;
       --input: 30 14% 86%;
-      --ring: 22 90% 48%;
+      --ring: 24 10% 35%;
 
-      /* Signature warm-orange brand accent — used sparingly */
-      --brand: 22 90% 48%;
+      /* Monochrome — "brand" is just ink so accents read as contrast, not color */
+      --brand: 24 14% 12%;
       --brand-foreground: 40 33% 98%;
 
       --radius: 0.65rem;
@@ -68,9 +68,9 @@
 
       --border: 30 8% 16%;
       --input: 30 8% 18%;
-      --ring: 24 92% 58%;
+      --ring: 36 10% 60%;
 
-      --brand: 24 95% 60%;
+      --brand: 36 20% 92%;
       --brand-foreground: 24 12% 6%;
     }
   }
@@ -102,6 +102,40 @@
       .has-custom-cursor * {
         cursor: none;
       }
+    }
+  }
+
+  /* "Tubelight" — key text glows softly in dark mode only (gxuri/chanhdai feel) */
+  .text-glow {
+    text-shadow: none;
+  }
+  .dark .text-glow {
+    text-shadow:
+      0 0 24px hsl(var(--foreground) / 0.35),
+      0 0 6px hsl(var(--foreground) / 0.25);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dark .text-glow {
+      text-shadow: 0 0 12px hsl(var(--foreground) / 0.25);
+    }
+  }
+
+  /* Click-ripple dots (evilrabbit-style) — spawned imperatively, self-removing */
+  .click-ripple-dot {
+    position: fixed;
+    width: 5px;
+    height: 5px;
+    margin: -2.5px 0 0 -2.5px;
+    border-radius: 9999px;
+    background: hsl(var(--foreground));
+    pointer-events: none;
+    z-index: 70;
+    animation: click-ripple 520ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes click-ripple {
+    to {
+      transform: translate(var(--dx), var(--dy)) scale(0.2);
+      opacity: 0;
     }
   }
 

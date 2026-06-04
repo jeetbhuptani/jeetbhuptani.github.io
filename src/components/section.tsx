@@ -28,7 +28,7 @@ export function Section({
         <span className="h-px flex-1 bg-border" />
       </div>
       {title ? (
-        <h2 className="mb-6 text-2xl font-semibold tracking-tight sm:text-3xl">
+        <h2 className="mb-6 font-mono text-xl font-medium tracking-tight sm:text-2xl">
           {title}
         </h2>
       ) : null}

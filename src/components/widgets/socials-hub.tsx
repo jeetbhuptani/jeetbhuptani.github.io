@@ -2,6 +2,7 @@ import Link from "next/link";
 import { SpotifyNowPlaying } from "@/components/widgets/spotify-now-playing";
 import { CurrentlyReading } from "@/components/widgets/currently-reading";
 import { GithubActivity } from "@/components/widgets/github-activity";
+import { InstagramEmbeds } from "@/components/widgets/instagram-embed";
 import { WidgetShell } from "@/components/widgets/widget-shell";
 import { DATA } from "@/data/resume";
 
@@ -22,6 +23,13 @@ export function SocialsHub() {
       </div>
       <SpotifyNowPlaying />
       <CurrentlyReading />
+      {DATA.instagram.posts.length ? (
+        <div className="sm:col-span-2">
+          <WidgetShell label="Instagram">
+            <InstagramEmbeds posts={DATA.instagram.posts} />
+          </WidgetShell>
+        </div>
+      ) : null}
       <div className="sm:col-span-2">
         <WidgetShell label="Elsewhere">
           <div className="flex flex-wrap gap-2">
