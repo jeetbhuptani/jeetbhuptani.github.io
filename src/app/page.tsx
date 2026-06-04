@@ -185,7 +185,7 @@ export default function Page() {
         <Section id="projects" label="Projects" title="Things I’ve built">
           <div className="-mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 [-ms-overflow-style:none] [mask-image:linear-gradient(to_right,transparent,black_1.5rem,black_calc(100%-1.5rem),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {DATA.projects.map((p) => (
-              <div key={p.title} className="w-[280px] shrink-0 snap-start sm:w-[300px]">
+              <div key={p.title} className="flex w-[280px] shrink-0 snap-start sm:w-[300px]">
                 <ProjectCard
                   href={p.href}
                   title={p.title}

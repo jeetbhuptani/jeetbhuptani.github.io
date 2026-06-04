@@ -32,7 +32,7 @@ export function ProjectCard({
   links?: readonly ProjectLink[];
 }) {
   return (
-    <div className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors duration-300 hover:border-brand/50">
+    <div className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors duration-300 hover:border-brand/50">
       {motif ? (
         <ShowcaseMotif variant={motif} />
       ) : video ? (
@@ -73,7 +73,7 @@ export function ProjectCard({
             {dates}
           </span>
         </div>
-        <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
+        <p className="line-clamp-4 text-sm leading-relaxed text-muted-foreground">{description}</p>
         {tags && tags.length ? (
           <ul className="mt-auto flex flex-wrap gap-1.5 pt-1">
             {tags.map((tag) => (
