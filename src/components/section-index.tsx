@@ -42,6 +42,7 @@ export function SectionIndex() {
   }, [onHome]);
 
   const jump = (id: string) => {
+    setActive(id); // highlight immediately on click; observer keeps it in sync after
     if (id === "hero") window.scrollTo({ top: 0, behavior: "smooth" });
     else document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };

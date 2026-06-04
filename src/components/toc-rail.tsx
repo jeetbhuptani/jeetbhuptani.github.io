@@ -47,6 +47,7 @@ export function TocRail({ headings }: { headings: Heading[] }) {
               <a
                 href={`#${h.id}`}
                 data-cursor
+                onClick={() => setActive(h.id)}
                 aria-current={on ? "true" : undefined}
                 className={`flex items-center gap-1.5 text-xs leading-snug transition-colors ${
                   on ? "text-foreground" : "text-muted-foreground hover:text-foreground"
