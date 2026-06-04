@@ -38,7 +38,9 @@ export function CommandMenu() {
       { id: "about", label: "About", hint: "a", group: "Navigate", run: () => scrollToId("about") },
       { id: "work", label: "Work", hint: "w", group: "Navigate", run: () => scrollToId("work") },
       { id: "now", label: "Currently", hint: "n", group: "Navigate", run: () => scrollToId("now") },
+      { id: "bookshelf", label: "Bookshelf", hint: "r", group: "Navigate", run: () => scrollToId("bookshelf") },
       { id: "projects", label: "Projects", hint: "p", group: "Navigate", run: () => scrollToId("projects") },
+      { id: "life", label: "Life", hint: "l", group: "Navigate", run: () => scrollToId("life") },
       { id: "contact", label: "Contact", hint: "c", group: "Navigate", run: () => scrollToId("contact") },
       { id: "blog", label: "Blog", hint: "b", group: "Navigate", run: () => (window.location.href = "/blog") },
     ];

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { normalizeHardcover, parseGoodreadsRss } from "./books";
+import { normalizeHardcover, parseGoodreadsRss, normalizeShelf } from "./books";
 
 describe("normalizeHardcover", () => {
   it("maps the live Hardcover currently-reading shape", () => {
@@ -55,5 +55,24 @@ describe("parseGoodreadsRss", () => {
 
   it("returns [] when there are no items", () => {
     expect(parseGoodreadsRss("<rss><channel></channel></rss>")).toEqual([]);
+  });
+});
+
+describe("normalizeShelf", () => {
+  it("labels status_id 2 as reading and 3 as read", () => {
+    const data = {
+      me: [
+        {
+          user_books: [
+            { status_id: 3, book: { title: "The Metamorphosis", contributions: [{ author: { name: "Kafka" } }] } },
+            { status_id: 2, book: { title: "Corporate Chanakya" } },
+          ],
+        },
+      ],
+    };
+    const shelf = normalizeShelf(data);
+    expect(shelf).toHaveLength(2);
+    expect(shelf[0]).toMatchObject({ title: "The Metamorphosis", author: "Kafka", status: "read" });
+    expect(shelf[1]).toMatchObject({ title: "Corporate Chanakya", status: "reading" });
   });
 });

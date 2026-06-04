@@ -19,6 +19,9 @@ export type BooksResult = {
   books: Book[];
 };
 
+export type ShelfBook = Book & { status: "reading" | "read" };
+export type ShelfResult = { status: "ok" | "empty" | "error"; books: ShelfBook[] };
+
 const HARDCOVER_ENDPOINT = "https://api.hardcover.app/v1/graphql";
 const GOODREADS_USER = "200870435-jeet-bhuptani";
 const CURRENTLY_READING_QUERY = `query CurrentlyReading {
@@ -50,6 +53,62 @@ export function normalizeHardcover(data: any): Book[] {
       };
     })
     .filter(Boolean) as Book[];
+}
+
+const SHELF_QUERY = `query Shelf {
+  me {
+    user_books(where: { status_id: { _in: [2, 3] } }) {
+      status_id
+      book {
+        title
+        contributions { author { name } }
+        image { url }
+        cached_image
+      }
+    }
+  }
+}`;
+
+export function normalizeShelf(data: any): ShelfBook[] {
+  const userBooks = data?.me?.[0]?.user_books ?? [];
+  return userBooks
+    .map((ub: any): ShelfBook | null => {
+      const book = ub?.book;
+      if (!book?.title) return null;
+      return {
+        title: book.title,
+        author: book.contributions?.[0]?.author?.name ?? "Unknown",
+        cover: book.image?.url ?? book.cached_image?.url,
+        accent: book.cached_image?.color,
+        status: ub.status_id === 2 ? "reading" : "read",
+      };
+    })
+    .filter(Boolean) as ShelfBook[];
+}
+
+export async function getBookshelf(): Promise<ShelfResult> {
+  const token = process.env.HARDCOVER_API_TOKEN;
+  if (!token) return { status: "empty", books: [] };
+  try {
+    const res = await fetch(HARDCOVER_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token.startsWith("Bearer ") ? token : `Bearer ${token}`,
+      },
+      body: JSON.stringify({ query: SHELF_QUERY }),
+      next: { revalidate: 86400 },
+    });
+    if (!res.ok) throw new Error(`Hardcover ${res.status}`);
+    const json = await res.json();
+    if (json.errors) throw new Error("Hardcover GraphQL error");
+    const books = normalizeShelf(json.data);
+    // currently-reading first, then read
+    books.sort((a, b) => (a.status === b.status ? 0 : a.status === "reading" ? -1 : 1));
+    return books.length ? { status: "ok", books } : { status: "empty", books: [] };
+  } catch {
+    return { status: "error", books: [] };
+  }
 }
 
 export function parseGoodreadsRss(xml: string): Book[] {

@@ -4,6 +4,8 @@ import { LenisProvider } from "@/components/providers/lenis-provider";
 import { MagneticCursor } from "@/components/cursor/magnetic-cursor";
 import { ClickRipple } from "@/components/click-ripple";
 import { CommandMenu } from "@/components/command-menu";
+import { HelloIntro } from "@/components/hello-intro";
+import { SectionIndex } from "@/components/section-index";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DATA } from "@/data/resume";
 import { cn } from "@/lib/utils";
@@ -90,7 +92,7 @@ export default function RootLayout({
 
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased max-w-2xl mx-auto py-12 sm:py-24 px-6",
+          "min-h-screen bg-background font-mono antialiased max-w-2xl mx-auto py-12 sm:py-24 px-6",
           GeistSans.variable,
           GeistMono.variable,
           fontSerif.variable
@@ -110,6 +112,8 @@ export default function RootLayout({
             <MagneticCursor />
             <ClickRipple />
             <CommandMenu />
+            <SectionIndex />
+            <HelloIntro />
           </TooltipProvider>
         </ThemeProvider>
       </body>

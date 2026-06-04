@@ -1,21 +1,48 @@
 import { Age } from "@/components/age";
-import { ExperienceItem } from "@/components/experience-item";
+import { AsciiAvatar } from "@/components/ascii-avatar";
+import { ExperienceTimeline, type TimelineItem } from "@/components/experience-timeline";
 import { HackathonCard } from "@/components/hackathon-card";
 import { ReactiveHero } from "@/components/hero/reactive-hero";
-import { Wave } from "@/components/hero/wave";
+import { LifeWall } from "@/components/life-wall";
 import { Magnetic } from "@/components/motion/magnetic";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/motion/reveal";
 import { ProjectCard } from "@/components/project-card";
 import { Section } from "@/components/section";
+import { Bookshelf } from "@/components/widgets/bookshelf";
 import { SocialsHub } from "@/components/widgets/socials-hub";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DATA } from "@/data/resume";
 import Link from "next/link";
 import Markdown from "react-markdown";
 
-const socials = Object.entries(DATA.contact.social).filter(
-  ([, s]) => "navbar" in s && s.navbar
-);
+const socials = Object.entries(DATA.contact.social).filter(([, s]) => "navbar" in s && s.navbar);
+
+const workItems: TimelineItem[] = DATA.work.map((w) => ({
+  org: w.company,
+  href: w.href,
+  logoUrl: w.logoUrl,
+  location: w.location,
+  role: w.title,
+  period: `${w.start} — ${w.end ?? "Present"}`,
+  description: w.description,
+}));
+
+const volunteerItems: TimelineItem[] = DATA.volunteer.map((w) => ({
+  org: w.company,
+  href: w.href,
+  logoUrl: w.logoUrl,
+  location: w.location,
+  role: w.title,
+  period: `${w.start} — ${w.end ?? "Present"}`,
+  description: w.description,
+}));
+
+const educationItems: TimelineItem[] = DATA.education.map((e) => ({
+  org: e.school,
+  href: e.href,
+  logoUrl: e.logoUrl,
+  role: e.degree,
+  period: `${e.start} — ${e.end}`,
+}));
 
 export default function Page() {
   return (
@@ -30,37 +57,28 @@ export default function Page() {
         </div>
 
         <Reveal>
-          <span className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand/60" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-brand" />
-            </span>
-            {DATA.location} · open to work
+          <span className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
+            <span className="h-1.5 w-1.5 rounded-full bg-foreground" />
+            {DATA.work[0].title} @ {DATA.work[0].company} · {DATA.location}
           </span>
         </Reveal>
 
         <div className="mt-4 flex items-start justify-between gap-6">
           <div className="flex flex-1 flex-col gap-4">
             <Reveal delay={0.05}>
-              <h1 className="text-glow text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
-                Jeet{" "}
-                <span className="font-serif font-normal italic">Bhuptani</span>{" "}
-                <Wave />
+              <h1 className="text-glow font-sans text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
+                Jeet <span className="font-serif font-normal italic">Bhuptani</span>
               </h1>
             </Reveal>
             <Reveal delay={0.12}>
-              <p className="max-w-md text-base leading-relaxed text-muted-foreground sm:text-lg">
-                <Age birth={DATA.birthDate} />-year-old Computer Engineer building
-                products, not just projects — I love learning new technologies and
-                shipping them.
+              <p className="max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
+                <Age birth={DATA.birthDate} />-year-old Computer Engineer building products, not
+                just projects — I love learning new technologies and shipping them.
               </p>
             </Reveal>
           </div>
           <Reveal delay={0.1}>
-            <Avatar className="size-24 border border-border sm:size-28">
-              <AvatarImage alt={DATA.name} src={DATA.avatarUrl} />
-              <AvatarFallback>{DATA.initials}</AvatarFallback>
-            </Avatar>
+            <AsciiAvatar src={DATA.avatarUrl} alt={DATA.name} />
           </Reveal>
         </div>
 
@@ -75,7 +93,7 @@ export default function Page() {
                     target="_blank"
                     data-cursor
                     aria-label={name}
-                    className="flex size-9 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:border-brand/50 hover:text-brand"
+                    className="flex size-9 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:text-foreground"
                   >
                     <Icon className="size-4" />
                   </Link>
@@ -89,71 +107,47 @@ export default function Page() {
       {/* About */}
       <Reveal>
         <Section id="about" label="About">
-          <div className="prose prose-sm max-w-full text-pretty font-sans text-muted-foreground dark:prose-invert prose-a:text-brand prose-a:no-underline hover:prose-a:underline">
+          <div className="prose prose-sm max-w-full text-pretty font-mono text-muted-foreground dark:prose-invert prose-a:text-foreground prose-a:underline prose-a:underline-offset-2">
             <Markdown>{DATA.summary}</Markdown>
           </div>
         </Section>
       </Reveal>
 
-      {/* Work */}
+      {/* Work — timeline + Ignosis showcase */}
       <Reveal>
         <Section id="work" label="Work">
-          <StaggerGroup className="flex flex-col gap-5">
-            {DATA.work.map((w) => (
-              <StaggerItem key={`${w.company}-${w.start}`}>
-                <ExperienceItem
-                  logoUrl={w.logoUrl}
-                  altText={w.company}
-                  title={w.company}
-                  subtitle={w.title}
-                  href={w.href}
-                  period={`${w.start} — ${w.end ?? "Present"}`}
-                  description={w.description}
+          <ExperienceTimeline items={workItems} />
+          <div className="mt-6">
+            <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+              Selected work at Ignosis
+            </p>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {DATA.showcase.map((p) => (
+                <ProjectCard
+                  key={p.title}
+                  href={p.href}
+                  title={p.title}
+                  description={p.description}
+                  dates={p.dates}
+                  tags={p.technologies}
+                  motif={p.motif}
+                  links={p.links}
                 />
-              </StaggerItem>
-            ))}
-          </StaggerGroup>
+              ))}
+            </div>
+          </div>
         </Section>
       </Reveal>
 
-      {/* Volunteer */}
+      {/* Community + Education */}
       <Reveal>
-        <Section id="volunteer" label="Community">
-          <StaggerGroup className="flex flex-col gap-5">
-            {DATA.volunteer.map((w) => (
-              <StaggerItem key={`${w.company}-${w.start}`}>
-                <ExperienceItem
-                  logoUrl={w.logoUrl}
-                  altText={w.company}
-                  title={w.company}
-                  subtitle={w.title}
-                  href={w.href}
-                  period={`${w.start} — ${w.end ?? "Present"}`}
-                  description={w.description}
-                />
-              </StaggerItem>
-            ))}
-          </StaggerGroup>
+        <Section id="community" label="Community">
+          <ExperienceTimeline items={volunteerItems} />
         </Section>
       </Reveal>
-
-      {/* Education */}
       <Reveal>
         <Section id="education" label="Education">
-          <StaggerGroup className="flex flex-col gap-5">
-            {DATA.education.map((e) => (
-              <StaggerItem key={e.school}>
-                <ExperienceItem
-                  logoUrl={e.logoUrl}
-                  altText={e.school}
-                  title={e.school}
-                  subtitle={e.degree}
-                  href={e.href}
-                  period={`${e.start} — ${e.end}`}
-                />
-              </StaggerItem>
-            ))}
-          </StaggerGroup>
+          <ExperienceTimeline items={educationItems} />
         </Section>
       </Reveal>
 
@@ -179,21 +173,25 @@ export default function Page() {
         </Section>
       </Reveal>
 
+      {/* Bookshelf — full shelf */}
+      <Reveal>
+        <Section id="bookshelf" label="Bookshelf" title="Everything I’ve read">
+          <Bookshelf />
+        </Section>
+      </Reveal>
+
       {/* Projects */}
       <Reveal>
         <Section id="projects" label="Projects" title="Things I’ve built">
           <div className="-mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 [-ms-overflow-style:none] [mask-image:linear-gradient(to_right,transparent,black_1.5rem,black_calc(100%-1.5rem),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {DATA.projects.map((p) => (
-              <div key={p.title} className="w-[280px] shrink-0 snap-start sm:w-[320px]">
+              <div key={p.title} className="w-[280px] shrink-0 snap-start sm:w-[300px]">
                 <ProjectCard
                   href={p.href}
                   title={p.title}
                   description={p.description}
                   dates={p.dates}
                   tags={p.technologies}
-                  image={p.image}
-                  video={p.video}
-                  motif={"motif" in p ? p.motif : undefined}
                   links={p.links}
                 />
               </div>
@@ -205,9 +203,16 @@ export default function Page() {
         </Section>
       </Reveal>
 
+      {/* Life */}
+      <Reveal>
+        <Section id="life" label="Life" title="The rest of it">
+          <LifeWall entries={DATA.life} />
+        </Section>
+      </Reveal>
+
       {/* Hackathons */}
       <Reveal>
-        <Section id="hackathons" label="Hackathons" title="I like building under pressure">
+        <Section id="hackathons" label="Hackathons" title="Building under pressure">
           <ul className="ml-4 divide-y divide-dashed border-l border-border">
             {DATA.hackathons.map((h) => (
               <HackathonCard
@@ -228,18 +233,13 @@ export default function Page() {
       <Reveal>
         <Section id="contact" label="Contact">
           <div className="flex flex-col items-start gap-4 rounded-2xl border border-border bg-card p-6 sm:p-8">
-            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+            <h2 className="font-sans text-2xl font-semibold tracking-tight sm:text-3xl">
               Let’s build something.
             </h2>
             <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
-              Got an idea, a role, or just want to talk shop? The fastest way to
-              reach me is a DM on{" "}
-              <Link
-                href={DATA.contact.social.X.url}
-                target="_blank"
-                data-cursor
-                className="text-brand hover:underline"
-              >
+              Got an idea, a role, or just want to talk shop? The fastest way to reach me is a DM
+              on{" "}
+              <Link href={DATA.contact.social.X.url} target="_blank" data-cursor className="text-foreground underline underline-offset-2">
                 X
               </Link>{" "}
               or an email.
@@ -248,7 +248,7 @@ export default function Page() {
               <Link
                 href={`mailto:${DATA.contact.email}`}
                 data-cursor
-                className="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-brand-foreground transition-opacity hover:opacity-90"
+                className="inline-flex items-center gap-2 rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90"
               >
                 {DATA.contact.email}
               </Link>

@@ -22,6 +22,14 @@ export const DATA = {
   instagram: {
     posts: [] as string[],
   },
+  // The "Life" wall — random things: people, places, moments. Add entries with an
+  // optional image and/or note. Empty = the section shows a gentle placeholder.
+  life: [] as {
+    title: string;
+    date?: string;
+    image?: string;
+    note?: string;
+  }[],
   skills: [
     "C++",
     "Java",
@@ -101,7 +109,7 @@ export const DATA = {
       href: "https://www.ignosis.ai/",
       badges: [],
       location: "Ahmedabad",
-      title: "SDE Intern",
+      title: "SE Intern",
       logoUrl: "/ignosis.png",
       start: "Dec 2025",
       end: "May 2026",
@@ -162,7 +170,8 @@ export const DATA = {
     },
     
   ],
-  projects: [
+  // Showcased work built at Ignosis — rendered under Work Experience, not Projects.
+  showcase: [
     {
       title: "E2E AI-Native Collections",
       href: "https://www.ignosis.ai/",
@@ -214,6 +223,8 @@ export const DATA = {
       image: "",
       video: "",
     },
+  ],
+  projects: [
     {
       title: "Artha AI",
       href: "https://arthaai-7x8z.onrender.com/",

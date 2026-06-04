@@ -58,14 +58,14 @@ export function GithubActivity() {
             contributions in the last year
           </p>
         ) : null}
-        <div className="flex gap-[3px] overflow-hidden">
+        <div className="flex w-full gap-[2px]">
           {weeks.map((week, wi) => (
-            <div key={wi} className="flex flex-col gap-[3px]">
+            <div key={wi} className="flex flex-1 flex-col gap-[2px]">
               {week.map((day) => (
                 <span
                   key={day.date}
                   title={`${day.count} on ${day.date}`}
-                  className={`size-[9px] rounded-[2px] ${LEVEL_BG[day.level] ?? LEVEL_BG[0]}`}
+                  className={`aspect-square w-full rounded-[2px] ${LEVEL_BG[day.level] ?? LEVEL_BG[0]}`}
                 />
               ))}
             </div>
