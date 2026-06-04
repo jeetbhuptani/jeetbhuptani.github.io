@@ -96,6 +96,13 @@
     p {
       text-wrap: pretty;
     }
+    /* Hide the native cursor only while the custom cursor is mounted (fine pointers) */
+    @media (pointer: fine) {
+      .has-custom-cursor,
+      .has-custom-cursor * {
+        cursor: none;
+      }
+    }
   }
 
   h3 code {
