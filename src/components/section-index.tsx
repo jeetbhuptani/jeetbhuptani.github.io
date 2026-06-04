@@ -7,7 +7,6 @@ const SECTIONS = [
   { id: "hero", label: "top" },
   { id: "about", label: "about" },
   { id: "work", label: "work" },
-  { id: "now", label: "currently" },
   { id: "bookshelf", label: "bookshelf" },
   { id: "projects", label: "projects" },
   { id: "life", label: "life" },

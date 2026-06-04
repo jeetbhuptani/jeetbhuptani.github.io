@@ -9,7 +9,7 @@ import { Reveal, StaggerGroup, StaggerItem } from "@/components/motion/reveal";
 import { ProjectCard } from "@/components/project-card";
 import { Section } from "@/components/section";
 import { Bookshelf } from "@/components/widgets/bookshelf";
-import { SocialsHub } from "@/components/widgets/socials-hub";
+import { LiveRail } from "@/components/live-rail";
 import { DATA } from "@/data/resume";
 import Link from "next/link";
 import Markdown from "react-markdown";
@@ -47,6 +47,7 @@ const educationItems: TimelineItem[] = DATA.education.map((e) => ({
 export default function Page() {
   return (
     <main className="flex flex-col gap-16 sm:gap-20">
+      <LiveRail />
       {/* Hero */}
       <section id="hero" className="relative">
         <div
@@ -168,13 +169,6 @@ export default function Page() {
               </StaggerItem>
             ))}
           </StaggerGroup>
-        </Section>
-      </Reveal>
-
-      {/* Currently — live account views */}
-      <Reveal>
-        <Section id="now" label="Currently">
-          <SocialsHub />
         </Section>
       </Reveal>
 

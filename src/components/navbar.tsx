@@ -12,6 +12,7 @@ import {
 import { DATA } from "@/data/resume";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState, useMemo } from "react";
 import { Icons } from "./icons";
@@ -135,19 +136,25 @@ export default function Navbar() {
   return (
     <>
       {/* Desktop Navbar */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 mx-auto mb-4 hidden sm:flex origin-bottom h-full max-h-14">
-        <div className="fixed bottom-0 inset-x-0 h-16 w-full bg-background to-transparent backdrop-blur-lg [-webkit-mask-image:linear-gradient(to_top,black,transparent)] dark:bg-background"></div>
-        <Dock className="z-50 pointer-events-auto relative mx-auto flex min-h-full h-full items-center px-1 bg-background [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)] transform-gpu dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset] ">
-          {renderItems(navItems, "size-12", "top", undefined, true)}
-          <Separator orientation="vertical" className="h-full" />
-          {renderItems(additionalNavItems, "size-12", "top", undefined, true)}
-          <Separator orientation="vertical" className="h-full" />
-          {renderItems(socialNavItems, "size-12", "top", undefined, true)}
-          <Separator orientation="vertical" className="h-full py-2" />
-          <DockIcon>
-            <ThemeToggle />
-          </DockIcon>
-        </Dock>
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 mx-auto mb-5 hidden h-full max-h-14 origin-bottom justify-center sm:flex">
+        <motion.div
+          initial={{ y: 28, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
+          className="pointer-events-auto"
+        >
+          <Dock className="relative z-50 flex h-full min-h-full items-center gap-0.5 rounded-2xl border border-border bg-card/70 px-1.5 backdrop-blur-xl transform-gpu shadow-[0_8px_30px_rgb(0_0_0_/_0.12)] supports-[backdrop-filter]:bg-card/60">
+            {renderItems(navItems, "size-12 rounded-xl text-muted-foreground hover:text-foreground transition-colors", "top", undefined, true)}
+            <Separator orientation="vertical" className="h-8 self-center bg-border" />
+            {renderItems(additionalNavItems, "size-12 rounded-xl text-muted-foreground hover:text-foreground transition-colors", "top", undefined, true)}
+            <Separator orientation="vertical" className="h-8 self-center bg-border" />
+            {renderItems(socialNavItems, "size-12 rounded-xl text-muted-foreground hover:text-foreground transition-colors", "top", undefined, true)}
+            <Separator orientation="vertical" className="h-8 self-center bg-border" />
+            <DockIcon>
+              <ThemeToggle />
+            </DockIcon>
+          </Dock>
+        </motion.div>
       </div>
 
       {/* Mobile Menu Overlay */}
@@ -184,7 +191,7 @@ export default function Navbar() {
               : "opacity-0 translate-y-2 scale-95 pointer-events-none"
           )}
         >
-          <div className="flex flex-col items-center gap-2 p-3 bg-background border border-border rounded-2xl shadow-lg backdrop-blur-lg [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)] dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset]">
+          <div className="flex flex-col items-center gap-1 rounded-2xl border border-border bg-card/80 p-2 shadow-[0_8px_30px_rgb(0_0_0_/_0.12)] backdrop-blur-xl">
             {allMobileMenuItems.map((item, index) => {
               if ('type' in item) {
                 if (item.type === 'separator') {

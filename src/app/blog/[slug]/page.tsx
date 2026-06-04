@@ -1,6 +1,7 @@
 import { getBlogPosts, getPost } from "@/data/blog";
 import { DATA } from "@/data/resume";
 import { BlogIndexRail } from "@/components/blog-index-rail";
+import { TocRail } from "@/components/toc-rail";
 import { Reveal } from "@/components/motion/reveal";
 import { extractHeadings, readingTime } from "@/lib/blog-utils";
 import { formatDate } from "@/lib/utils";
@@ -62,6 +63,7 @@ export default async function Blog({ params }: { params: { slug: string } }) {
   return (
     <main className="flex flex-col gap-8">
       <BlogIndexRail posts={allPosts} current={post.slug} />
+      <TocRail headings={headings} />
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -95,27 +97,6 @@ export default async function Blog({ params }: { params: { slug: string } }) {
           {formatDate(post.metadata.publishedAt)} · {minutes} min read
         </p>
       </Reveal>
-
-      {headings.length >= 3 ? (
-        <nav aria-label="Table of contents" className="rounded-xl border border-border bg-card p-4">
-          <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-            On this page
-          </p>
-          <ul className="flex flex-col gap-1.5">
-            {headings.map((h) => (
-              <li key={h.id} className={h.level === 3 ? "pl-3" : undefined}>
-                <a
-                  href={`#${h.id}`}
-                  data-cursor
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  {h.text}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      ) : null}
 
       <article
         className="prose prose-neutral max-w-none font-sans dark:prose-invert prose-headings:scroll-mt-24 prose-headings:font-sans prose-headings:tracking-tight prose-a:text-foreground prose-a:underline-offset-2 prose-pre:rounded-lg prose-img:rounded-xl"
