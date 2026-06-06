@@ -6,22 +6,30 @@ import Image from "next/image";
 export const DATA = {
   name: "Jeet Bhuptani",
   initials: "JB",
-  url: "https://www.github.com.jeetbhuptani",
+  url: "https://jeetbhuptani.me",
   location: "Ahmedabad, GUJ, India",
   locationLink: "https://www.google.com/maps/place/ahmedabad",
+  birthDate: "2004-08-01",
+  // Age is rendered live in the hero via <Age birth={DATA.birthDate} />; this
+  // string is the age-free fallback used for SEO/meta and non-hero contexts.
   description:
-    `A ${(() => { const birthDate = new Date('2004-08-01');
-      const today = new Date();
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const monthDifference = today.getMonth() - birthDate.getMonth();
-      if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
-      return age;
-    })()} years young Computer Engineer. I am all about building <s>projects</s> <strong>products</strong>. I love to learn new technologies and apply them to my products.`,
+    "Computer Engineer all about building products, not just projects — I love learning new technologies and shipping them.",
   summary:
-    "I have six years of studying experience with hands on in this field. In the past, [I pursued a diploma in computer engineering](/#education) and [part of 4 hackathons for fun & learning](/#hackathons). I also had the pleasure of being a part of a club [GDG DDU](https://gdg.community.dev/gdg-on-campus-dharmsinh-desai-university-nadiad-india/).",
+    "I hold a [B.Tech in Computer Engineering](/#education) from Dharmsinh Desai University, after a diploma in computer engineering — six years of hands-on study in the field. Along the way I was [part of 4 hackathons for fun & learning](/#hackathons) and had the pleasure of helping run [GDG DDU](https://gdg.community.dev/gdg-on-campus-dharmsinh-desai-university-nadiad-india/).",
   avatarUrl: "/jeet.jpg",
+  // Instagram is embed-only (no API/token). Paste public post permalinks here —
+  // creator posts first, then personal. Empty = the Instagram tile is omitted.
+  instagram: {
+    posts: [] as string[],
+  },
+  // The "Life" wall — random things: people, places, moments. Add entries with an
+  // optional image and/or note. Empty = the section shows a gentle placeholder.
+  life: [] as {
+    title: string;
+    date?: string;
+    image?: string;
+    note?: string;
+  }[],
   skills: [
     "C++",
     "Java",
@@ -89,12 +97,24 @@ export const DATA = {
       href: "https://www.ignosis.ai/",
       badges: [],
       location: "Ahmedabad",
-      title: "SDE Intern",
+      title: "Software Engineer",
+      logoUrl: "/ignosis.png",
+      start: "Jun 2026",
+      end: "Present",
+      description:
+        "Building AI-native products for the BFSI space — agentic collections orchestration and a compliance-first voice-AI platform on top of consent-based financial data.",
+    },
+    {
+      company: "Ignosis",
+      href: "https://www.ignosis.ai/",
+      badges: [],
+      location: "Ahmedabad",
+      title: "SE Intern",
       logoUrl: "/ignosis.png",
       start: "Dec 2025",
       end: "May 2026",
       description:
-        "SDE Intern where I will learn and work on building the next great Financial + Agentic AI products.",
+        "Joined as an intern building Financial + Agentic AI products, then converted to a full-time Software Engineer.",
     },
   ],
   volunteer: [
@@ -149,6 +169,60 @@ export const DATA = {
       end: "2020",
     },
     
+  ],
+  // Showcased work built at Ignosis — rendered under Work Experience, not Projects.
+  showcase: [
+    {
+      title: "E2E AI-Native Collections",
+      href: "https://www.ignosis.ai/",
+      dates: "2026 — Present · Ignosis",
+      active: true,
+      motif: "collections",
+      description:
+        "An end-to-end, AI-native debt-collections platform: autonomous agents orchestrate multi-channel borrower outreach (voice, chat, nudges) on top of consent-based financial data, driving campaign decisions in real time. Capability overview — built at Ignosis; no confidential detail shown.",
+      technologies: [
+        "Java",
+        "Spring Boot",
+        "AI Agents",
+        "Account Aggregator",
+        "BFSI",
+        "Microservices",
+      ],
+      links: [
+        {
+          type: "Ignosis",
+          href: "https://www.ignosis.ai/",
+          icon: <Icons.globe className="size-3" />,
+        },
+      ],
+      image: "",
+      video: "",
+    },
+    {
+      title: "BFSI-Compliant VoiceAI Platform",
+      href: "https://www.ignosis.ai/",
+      dates: "2026 — Present · Ignosis",
+      active: true,
+      motif: "voice",
+      description:
+        "A compliance-first voice-AI system for regulated financial workflows — automated outbound calls with real-time speech, guardrails, and auditable conversation flows. Capability overview — built at Ignosis; no confidential detail shown.",
+      technologies: [
+        "Voice AI",
+        "LLMs",
+        "Telephony",
+        "Real-time Speech",
+        "Compliance",
+      ],
+      links: [
+        {
+          type: "Ignosis",
+          href: "https://www.ignosis.ai/",
+          icon: <Icons.globe className="size-3" />,
+        },
+      ],
+      image: "",
+      video: "",
+    },
   ],
   projects: [
     {

@@ -1,257 +1,260 @@
+import { Age } from "@/components/age";
+import { ASCII_AVATAR } from "@/data/ascii-avatar";
+import { ExperienceTimeline, type TimelineItem } from "@/components/experience-timeline";
 import { HackathonCard } from "@/components/hackathon-card";
-import BlurFade from "@/components/magicui/blur-fade";
-import BlurFadeText from "@/components/magicui/blur-fade-text";
+import { ReactiveHero } from "@/components/hero/reactive-hero";
+import { LifeWall } from "@/components/life-wall";
+import { Magnetic } from "@/components/motion/magnetic";
+import { Reveal, StaggerGroup, StaggerItem } from "@/components/motion/reveal";
 import { ProjectCard } from "@/components/project-card";
-import { ResumeCard } from "@/components/resume-card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { Section } from "@/components/section";
+import { Bookshelf } from "@/components/widgets/bookshelf";
+import { LiveRail } from "@/components/live-rail";
 import { DATA } from "@/data/resume";
 import Link from "next/link";
 import Markdown from "react-markdown";
 
-const BLUR_FADE_DELAY = 0.04;
+const socials = Object.entries(DATA.contact.social).filter(([, s]) => "navbar" in s && s.navbar);
+
+const workItems: TimelineItem[] = DATA.work.map((w) => ({
+  org: w.company,
+  href: w.href,
+  logoUrl: w.logoUrl,
+  location: w.location,
+  role: w.title,
+  period: `${w.start} — ${w.end ?? "Present"}`,
+  description: w.description,
+}));
+
+const volunteerItems: TimelineItem[] = DATA.volunteer.map((w) => ({
+  org: w.company,
+  href: w.href,
+  logoUrl: w.logoUrl,
+  location: w.location,
+  role: w.title,
+  period: `${w.start} — ${w.end ?? "Present"}`,
+  description: w.description,
+}));
+
+const educationItems: TimelineItem[] = DATA.education.map((e) => ({
+  org: e.school,
+  href: e.href,
+  logoUrl: e.logoUrl,
+  role: e.degree,
+  period: `${e.start} — ${e.end}`,
+}));
 
 export default function Page() {
   return (
-    <main className="flex flex-col min-h-[100dvh] space-y-10">
-      <section id="hero">
-        <div className="mx-auto w-full max-w-2xl space-y-8">
-          <div className="gap-2 flex justify-between">
-            <div className="flex-col flex flex-1 space-y-1.5">
-              <BlurFadeText
-                delay={BLUR_FADE_DELAY}
-                className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none"
-                yOffset={8}
-                text={`Hi, I'm ${DATA.name.split(" ")[0]} 👋`}
-              />
-              <BlurFade delay={BLUR_FADE_DELAY}>
-                <div
-                  className="max-w-[600px] md:text-xl text-muted-foreground"
-                  dangerouslySetInnerHTML={{ __html: DATA.description }}
-                />
-              </BlurFade>
-            </div>
-            <BlurFade delay={BLUR_FADE_DELAY}>
-              <Avatar className="size-28 border">
-                <AvatarImage alt={DATA.name} src={DATA.avatarUrl} />
-                <AvatarFallback>{DATA.initials}</AvatarFallback>
-              </Avatar>
-            </BlurFade>
-          </div>
+    <main className="flex flex-col gap-16 sm:gap-20">
+      <LiveRail />
+      {/* Hero */}
+      <section id="hero" className="relative">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-[-2rem] -top-16 -z-10 h-[340px] [mask-image:radial-gradient(58%_60%_at_50%_38%,black,transparent_85%)]"
+        >
+          <ReactiveHero />
         </div>
-      </section>
-      <section id="about">
-        <BlurFade delay={BLUR_FADE_DELAY * 3}>
-          <h2 className="text-xl font-bold">About</h2>
-        </BlurFade>
-        <BlurFade delay={BLUR_FADE_DELAY * 4}>
-          <Markdown className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert">
-            {DATA.summary}
-          </Markdown>
-        </BlurFade>
-      </section>
-      <section id="work">
-        <div className="flex min-h-0 flex-col gap-y-3">
-          <BlurFade delay={BLUR_FADE_DELAY * 5}>
-            <h2 className="text-xl font-bold">Work Experience</h2>
-          </BlurFade>
-          {DATA.work.map((work, id) => (
-            <BlurFade
-              key={work.company}
-              delay={BLUR_FADE_DELAY * 6 + id * 0.05}
-            >
-              <ResumeCard
-                key={work.company}
-                logoUrl={work.logoUrl}
-                altText={work.company}
-                title={work.company}
-                subtitle={work.title}
-                href={work.href}
-                badges={work.badges}
-                period={`${work.start} - ${work.end ?? "Present"}`}
-                description={work.description}
-              />
-            </BlurFade>
-          ))}
-        </div>
-      </section>
-      <section id="work">
-        <div className="flex min-h-0 flex-col gap-y-3">
-          <BlurFade delay={BLUR_FADE_DELAY * 5}>
-            <h2 className="text-xl font-bold">Volunteer Experience</h2>
-          </BlurFade>
-          {DATA.volunteer.map((work, id) => (
-            <BlurFade
-              key={work.company}
-              delay={BLUR_FADE_DELAY * 6 + id * 0.05}
-            >
-              <ResumeCard
-                key={work.company}
-                logoUrl={work.logoUrl}
-                altText={work.company}
-                title={work.company}
-                subtitle={work.title}
-                href={work.href}
-                badges={work.badges}
-                period={`${work.start} - ${work.end ?? "Present"}`}
-                description={work.description}
-              />
-            </BlurFade>
-          ))}
-        </div>
-      </section>
-      <section id="education">
-        <div className="flex min-h-0 flex-col gap-y-3">
-          <BlurFade delay={BLUR_FADE_DELAY * 7}>
-            <h2 className="text-xl font-bold">Education</h2>
-          </BlurFade>
-          {DATA.education.map((education, id) => (
-            <BlurFade
-              key={education.school}
-              delay={BLUR_FADE_DELAY * 8 + id * 0.05}
-            >
-              <ResumeCard
-                key={education.school}
-                href={education.href}
-                logoUrl={education.logoUrl}
-                altText={education.school}
-                title={education.school}
-                subtitle={education.degree}
-                period={`${education.start} - ${education.end}`}
-              />
-            </BlurFade>
-          ))}
-        </div>
-      </section>
-      <section id="skills">
-        <div className="flex min-h-0 flex-col gap-y-3">
-          <BlurFade delay={BLUR_FADE_DELAY * 9}>
-            <h2 className="text-xl font-bold">Skills</h2>
-          </BlurFade>
-          <div className="flex flex-wrap gap-1">
-            {DATA.skills.map((skill, id) => (
-              <BlurFade key={skill} delay={BLUR_FADE_DELAY * 10 + id * 0.05}>
-                <Badge key={skill}>{skill}</Badge>
-              </BlurFade>
-            ))}
-          </div>
-        </div>
-      </section>
-      <section id="projects">
-        <div className="space-y-12 w-full py-12">
-          <BlurFade delay={BLUR_FADE_DELAY * 11}>
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <div className="space-y-2">
-                <div className="inline-block rounded-lg bg-foreground text-background px-3 py-1 text-sm">
-                  My Projects
-                </div>
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                  Check out my latest work
-                </h2>
-                <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  I&apos;ve worked on a variety of projects, from simple
-                  websites to complex web applications. Here are a few of my
-                  favorites.
-                </p>
-              </div>
-            </div>
-          </BlurFade>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 max-w-[800px] mx-auto">
-            {DATA.projects.map((project, id) => (
-              <BlurFade
-                key={project.title}
-                delay={BLUR_FADE_DELAY * 12 + id * 0.05}
-              >
-                <ProjectCard
-                  href={project.href}
-                  key={project.title}
-                  title={project.title}
-                  description={project.description}
-                  dates={project.dates}
-                  tags={project.technologies}
-                  image={project.image}
-                  video={project.video}
-                  links={project.links}
-                />
-              </BlurFade>
-            ))}
-          </div>
-        </div>
-      </section>
-      <section id="hackathons">
-        <div className="space-y-12 w-full py-12">
-          <BlurFade delay={BLUR_FADE_DELAY * 13}>
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <div className="space-y-2">
-                <div className="inline-block rounded-lg bg-foreground text-background px-3 py-1 text-sm">
-                  Hackathons
-                </div>
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                  I like building things
-                </h2>
-                <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  During my time in university, I attended{" "}
-                  {DATA.hackathons.length} hackathons. People from around the
-                  country would come together and build incredible things in 2-3
-                  days. It was eye-opening to see the endless possibilities
-                  brought to life by a group of motivated and passionate
-                  individuals.
-                </p>
-              </div>
-            </div>
-          </BlurFade>
-          <BlurFade delay={BLUR_FADE_DELAY * 14}>
-            <ul className="mb-4 ml-4 divide-y divide-dashed border-l">
-              {DATA.hackathons.map((project, id) => (
-                <BlurFade
-                  key={project.title + project.dates}
-                  delay={BLUR_FADE_DELAY * 15 + id * 0.05}
-                >
-                  <HackathonCard
-                    title={project.title}
-                    description={project.description}
-                    location={project.location}
-                    dates={project.dates}
-                    image={project.image}
-                    links={project.links}
-                  />
-                </BlurFade>
-              ))}
-            </ul>
-          </BlurFade>
-        </div>
-      </section>
-      <section id="contact">
-        <div className="grid items-center justify-center gap-4 px-4 text-center md:px-6 w-full py-12">
-          <BlurFade delay={BLUR_FADE_DELAY * 16}>
-            <div className="space-y-3">
-              <div className="inline-block rounded-lg bg-foreground text-background px-3 py-1 text-sm">
-                Contact
-              </div>
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                Get in Touch
-              </h2>
-              <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Want to chat? Just shoot me a dm{" "}
-                <Link
-                  href={DATA.contact.social.X.url}
-                  className="text-blue-500 hover:underline"
-                >
-                  with a direct question on twitter
-                </Link>{" or email me at "}
-                <Link
-                  href={`mailto:${DATA.contact.email}`}
-                  className="text-blue-500 hover:underline"
-                >
-                  {DATA.contact.email}
-                </Link>{" "}
-                and I&apos;ll respond whenever I can. I will ignore all
-                soliciting.
+
+        <Reveal>
+          <span className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
+            <span className="h-1.5 w-1.5 rounded-full bg-foreground" />
+            {DATA.work[0].title} @ {DATA.work[0].company} · {DATA.location}
+          </span>
+        </Reveal>
+
+        <div className="mt-4 flex items-start justify-between gap-6">
+          <div className="flex flex-1 flex-col gap-4">
+            <Reveal delay={0.05}>
+              <h1 className="text-glow font-sans text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
+                Jeet <span className="font-serif font-normal italic">Bhuptani</span>
+              </h1>
+            </Reveal>
+            <Reveal delay={0.12}>
+              <p className="max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
+                <Age birth={DATA.birthDate} />-year-old Computer Engineer building products, not
+                just projects — I love learning new technologies and shipping them.
               </p>
-            </div>
-          </BlurFade>
+            </Reveal>
+          </div>
+          <Reveal delay={0.1}>
+            <pre
+              aria-label={`ASCII portrait of ${DATA.name}`}
+              className="w-fit shrink-0 overflow-hidden rounded-xl border border-border bg-card p-1.5 font-mono text-[2.5px] leading-[2.5px] text-foreground sm:text-[3px] sm:leading-[3px]"
+            >
+              {ASCII_AVATAR}
+            </pre>
+          </Reveal>
         </div>
+
+        <Reveal delay={0.18}>
+          <div className="mt-6 flex flex-wrap items-center gap-2">
+            {socials.map(([name, s]) => {
+              const Icon = s.icon;
+              return (
+                <Magnetic key={name} strength={0.4}>
+                  <Link
+                    href={s.url}
+                    target="_blank"
+                    data-cursor
+                    aria-label={name}
+                    className="flex size-9 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    <Icon className="size-4" />
+                  </Link>
+                </Magnetic>
+              );
+            })}
+          </div>
+        </Reveal>
       </section>
+
+      {/* About */}
+      <Reveal>
+        <Section id="about" label="About">
+          <div className="prose prose-sm max-w-full text-pretty font-mono text-muted-foreground dark:prose-invert prose-a:text-foreground prose-a:underline prose-a:underline-offset-2">
+            <Markdown>{DATA.summary}</Markdown>
+          </div>
+        </Section>
+      </Reveal>
+
+      {/* Work — timeline + Ignosis showcase */}
+      <Reveal>
+        <Section id="work" label="Work">
+          <ExperienceTimeline items={workItems} />
+          <div className="mt-6">
+            <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+              Selected work at Ignosis
+            </p>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {DATA.showcase.map((p) => (
+                <ProjectCard
+                  key={p.title}
+                  href={p.href}
+                  title={p.title}
+                  description={p.description}
+                  dates={p.dates}
+                  tags={p.technologies}
+                  motif={p.motif}
+                  links={p.links}
+                />
+              ))}
+            </div>
+          </div>
+        </Section>
+      </Reveal>
+
+      {/* Community + Education */}
+      <Reveal>
+        <Section id="community" label="Community">
+          <ExperienceTimeline items={volunteerItems} />
+        </Section>
+      </Reveal>
+      <Reveal>
+        <Section id="education" label="Education">
+          <ExperienceTimeline items={educationItems} />
+        </Section>
+      </Reveal>
+
+      {/* Skills */}
+      <Reveal>
+        <Section id="skills" label="Stack">
+          <StaggerGroup className="flex flex-wrap gap-2">
+            {DATA.skills.map((skill) => (
+              <StaggerItem key={skill}>
+                <span className="rounded-lg border border-border bg-card px-2.5 py-1 font-mono text-xs text-muted-foreground">
+                  {skill}
+                </span>
+              </StaggerItem>
+            ))}
+          </StaggerGroup>
+        </Section>
+      </Reveal>
+
+      {/* Bookshelf — full shelf */}
+      <Reveal>
+        <Section id="bookshelf" label="Bookshelf" title="Everything I’ve read">
+          <Bookshelf />
+        </Section>
+      </Reveal>
+
+      {/* Projects */}
+      <Reveal>
+        <Section id="projects" label="Projects" title="Things I’ve built">
+          <div className="-mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 [-ms-overflow-style:none] [mask-image:linear-gradient(to_right,transparent,black_1.5rem,black_calc(100%-1.5rem),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {DATA.projects.map((p) => (
+              <div key={p.title} className="flex w-[280px] shrink-0 snap-start sm:w-[300px]">
+                <ProjectCard
+                  href={p.href}
+                  title={p.title}
+                  description={p.description}
+                  dates={p.dates}
+                  tags={p.technologies}
+                  links={p.links}
+                />
+              </div>
+            ))}
+          </div>
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+            scroll →
+          </p>
+        </Section>
+      </Reveal>
+
+      {/* Life */}
+      <Reveal>
+        <Section id="life" label="Life" title="The rest of it">
+          <LifeWall entries={DATA.life} />
+        </Section>
+      </Reveal>
+
+      {/* Hackathons */}
+      <Reveal>
+        <Section id="hackathons" label="Hackathons" title="Building under pressure">
+          <ul className="ml-4 divide-y divide-dashed border-l border-border">
+            {DATA.hackathons.map((h) => (
+              <HackathonCard
+                key={h.title + h.dates}
+                title={h.title}
+                description={h.description}
+                location={h.location}
+                dates={h.dates}
+                image={h.image}
+                links={h.links}
+              />
+            ))}
+          </ul>
+        </Section>
+      </Reveal>
+
+      {/* Contact */}
+      <Reveal>
+        <Section id="contact" label="Contact">
+          <div className="flex flex-col items-start gap-4 rounded-2xl border border-border bg-card p-6 sm:p-8">
+            <h2 className="font-sans text-2xl font-semibold tracking-tight sm:text-3xl">
+              Let’s build something.
+            </h2>
+            <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
+              Got an idea, a role, or just want to talk shop? The fastest way to reach me is a DM
+              on{" "}
+              <Link href={DATA.contact.social.X.url} target="_blank" data-cursor className="text-foreground underline underline-offset-2">
+                X
+              </Link>{" "}
+              or an email.
+            </p>
+            <Magnetic strength={0.25}>
+              <Link
+                href={`mailto:${DATA.contact.email}`}
+                data-cursor
+                className="inline-flex items-center gap-2 rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90"
+              >
+                {DATA.contact.email}
+              </Link>
+            </Magnetic>
+          </div>
+        </Section>
+      </Reveal>
     </main>
   );
 }
