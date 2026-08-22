@@ -63,9 +63,13 @@ export default async function Page() {
     <main className="flex flex-col gap-16 sm:gap-20">
       {/* Hero */}
       <section id="hero" className="relative">
+        {/* -1.5rem matches the body's px-6, so the glow reaches exactly the
+            viewport edge on phones. At -2rem it spilled 8px past it and gave
+            the whole page a sideways scroll; from `sm` up the centred
+            max-w-2xl container has margin to spare, so -2rem is safe there. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-[-2rem] -top-16 -z-10 h-[340px] [mask-image:radial-gradient(58%_60%_at_50%_38%,black,transparent_85%)]"
+          className="pointer-events-none absolute inset-x-[-1.5rem] -top-16 -z-10 h-[340px] sm:inset-x-[-2rem] [mask-image:radial-gradient(58%_60%_at_50%_38%,black,transparent_85%)]"
         >
           <ReactiveHero />
         </div>
