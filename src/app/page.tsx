@@ -10,7 +10,10 @@ import { ProjectCard } from "@/components/project-card";
 import { Section } from "@/components/section";
 import { Bookshelf } from "@/components/widgets/bookshelf";
 import { LiveRail } from "@/components/live-rail";
+import { MoreLink } from "@/components/more-link";
+import { SkillGrid } from "@/components/skill-grid";
 import { DATA } from "@/data/resume";
+import { getSkills } from "@/lib/content";
 import Link from "next/link";
 import Markdown from "react-markdown";
 
@@ -44,7 +47,9 @@ const educationItems: TimelineItem[] = DATA.education.map((e) => ({
   period: `${e.start} — ${e.end}`,
 }));
 
-export default function Page() {
+export default async function Page() {
+  const skills = await getSkills();
+
   return (
     <main className="flex flex-col gap-16 sm:gap-20">
       <LiveRail />
@@ -141,6 +146,7 @@ export default function Page() {
                 />
               ))}
             </div>
+            <MoreLink href="/work">The full work timeline</MoreLink>
           </div>
         </Section>
       </Reveal>
@@ -157,25 +163,18 @@ export default function Page() {
         </Section>
       </Reveal>
 
-      {/* Skills */}
+      {/* Skills — grouped by category, weighted by how much I actually use them */}
       <Reveal>
         <Section id="skills" label="Stack">
-          <StaggerGroup className="flex flex-wrap gap-2">
-            {DATA.skills.map((skill) => (
-              <StaggerItem key={skill}>
-                <span className="rounded-lg border border-border bg-card px-2.5 py-1 font-mono text-xs text-muted-foreground">
-                  {skill}
-                </span>
-              </StaggerItem>
-            ))}
-          </StaggerGroup>
+          <SkillGrid skills={skills} />
         </Section>
       </Reveal>
 
-      {/* Bookshelf — full shelf */}
+      {/* Bookshelf — teaser; the full shelf lives at /bookshelf */}
       <Reveal>
         <Section id="bookshelf" label="Bookshelf" title="Everything I’ve read">
           <Bookshelf />
+          <MoreLink href="/bookshelf">Browse the shelves by genre</MoreLink>
         </Section>
       </Reveal>
 
@@ -206,6 +205,7 @@ export default function Page() {
       <Reveal>
         <Section id="life" label="Life" title="The rest of it">
           <LifeWall entries={DATA.life} />
+          <MoreLink href="/life">The people around the work</MoreLink>
         </Section>
       </Reveal>
 
