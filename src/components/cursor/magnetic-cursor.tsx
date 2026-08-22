@@ -1,68 +1,107 @@
 "use client";
 
-import { useRef } from "react";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
-import { usePointerFine, useMotionAllowed } from "@/lib/use-pointer-fine";
+import { useEffect, useRef } from "react";
 
-gsap.registerPlugin(useGSAP);
+import { useMotionAllowed, usePointerFine } from "@/lib/use-pointer-fine";
 
 /**
- * Signature custom cursor: an instant brand dot trailed by a lagging ring that
- * grows over interactive elements ([data-cursor], a, button). Only mounts on
- * fine pointers with motion allowed (R5/R6/AE2); useGSAP auto-reverts on unmount
- * so route changes leave no orphaned listeners (StrictMode-safe).
+ * Custom cursor: an instant dot trailed by a lagging ring that grows over
+ * interactive elements. Only mounts on fine pointers with motion allowed.
+ *
+ * Implemented as a single rAF lerp rather than with GSAP — this is the only
+ * thing that pulled GSAP into the bundle, and ~70KB of tween engine to move two
+ * divs is not a trade worth making. The loop parks itself when the pointer is
+ * at rest, so it costs nothing while reading.
+ *
+ * Hover targets are matched by event delegation on the document, so elements
+ * rendered after mount (the client-fetched bookshelf, admin editors, anything
+ * behind a route change) get the effect too. The previous querySelectorAll-once
+ * approach silently missed all of them.
  */
+
+/** Per-frame approach factor. Higher = snappier; the ring lags deliberately. */
+const DOT_EASE = 0.35;
+const RING_EASE = 0.14;
+/** Below this, we are within a pixel of the target — stop the loop. */
+const REST_EPSILON = 0.05;
+
 export function MagneticCursor() {
   const fine = usePointerFine();
   const allowed = useMotionAllowed();
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(
-    () => {
-      if (!fine || !allowed) return;
-      const dot = dotRef.current;
-      const ring = ringRef.current;
-      if (!dot || !ring) return;
+  useEffect(() => {
+    if (!fine || !allowed) return;
+    const dot = dotRef.current;
+    const ring = ringRef.current;
+    if (!dot || !ring) return;
 
-      document.documentElement.classList.add("has-custom-cursor");
+    const root = document.documentElement;
+    root.classList.add("has-custom-cursor");
 
-      const xDot = gsap.quickTo(dot, "x", { duration: 0.08, ease: "power3" });
-      const yDot = gsap.quickTo(dot, "y", { duration: 0.08, ease: "power3" });
-      const xRing = gsap.quickTo(ring, "x", { duration: 0.4, ease: "power3" });
-      const yRing = gsap.quickTo(ring, "y", { duration: 0.4, ease: "power3" });
+    let targetX = window.innerWidth / 2;
+    let targetY = window.innerHeight / 2;
+    let dotX = targetX;
+    let dotY = targetY;
+    let ringX = targetX;
+    let ringY = targetY;
+    let ringScale = 1;
+    let targetScale = 1;
+    let frame = 0;
 
-      const move = (e: PointerEvent) => {
-        xDot(e.clientX);
-        yDot(e.clientY);
-        xRing(e.clientX);
-        yRing(e.clientY);
-      };
+    const tick = () => {
+      dotX += (targetX - dotX) * DOT_EASE;
+      dotY += (targetY - dotY) * DOT_EASE;
+      ringX += (targetX - ringX) * RING_EASE;
+      ringY += (targetY - ringY) * RING_EASE;
+      ringScale += (targetScale - ringScale) * RING_EASE;
 
-      const enter = () => gsap.to(ring, { scale: 1.9, opacity: 0.5, duration: 0.3, ease: "power3" });
-      const leave = () => gsap.to(ring, { scale: 1, opacity: 1, duration: 0.3, ease: "power3" });
+      // translate3d keeps both elements on their own compositor layer, so the
+      // cursor never invalidates layout or paint for the rest of the page.
+      dot.style.transform = `translate3d(${dotX}px, ${dotY}px, 0)`;
+      ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) scale(${ringScale})`;
+      ring.style.opacity = String(1 - (ringScale - 1) * 0.55);
 
-      const interactive = Array.from(
-        document.querySelectorAll<HTMLElement>("a, button, [data-cursor]")
-      );
-      interactive.forEach((el) => {
-        el.addEventListener("pointerenter", enter);
-        el.addEventListener("pointerleave", leave);
-      });
-      window.addEventListener("pointermove", move);
+      const settled =
+        Math.abs(targetX - ringX) < REST_EPSILON &&
+        Math.abs(targetY - ringY) < REST_EPSILON &&
+        Math.abs(targetScale - ringScale) < REST_EPSILON;
 
-      return () => {
-        window.removeEventListener("pointermove", move);
-        interactive.forEach((el) => {
-          el.removeEventListener("pointerenter", enter);
-          el.removeEventListener("pointerleave", leave);
-        });
-        document.documentElement.classList.remove("has-custom-cursor");
-      };
-    },
-    { dependencies: [fine, allowed] }
-  );
+      frame = settled ? 0 : requestAnimationFrame(tick);
+    };
+
+    const wake = () => {
+      if (!frame) frame = requestAnimationFrame(tick);
+    };
+
+    const onMove = (e: PointerEvent) => {
+      targetX = e.clientX;
+      targetY = e.clientY;
+      wake();
+    };
+
+    const INTERACTIVE = "a, button, [data-cursor], input, textarea, select, summary";
+    const onOver = (e: PointerEvent) => {
+      const next = (e.target as Element | null)?.closest?.(INTERACTIVE) ? 1.9 : 1;
+      if (next !== targetScale) {
+        targetScale = next;
+        wake();
+      }
+    };
+
+    window.addEventListener("pointermove", onMove, { passive: true });
+    // pointerover bubbles, so one listener covers the whole document.
+    document.addEventListener("pointerover", onOver, { passive: true });
+    wake();
+
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerover", onOver);
+      if (frame) cancelAnimationFrame(frame);
+      root.classList.remove("has-custom-cursor");
+    };
+  }, [fine, allowed]);
 
   if (!fine || !allowed) return null;
 
@@ -71,12 +110,12 @@ export function MagneticCursor() {
       <div
         ref={ringRef}
         aria-hidden
-        className="pointer-events-none fixed left-0 top-0 z-[60] -ml-4 -mt-4 h-8 w-8 rounded-full border border-brand/70 mix-blend-difference"
+        className="pointer-events-none fixed left-0 top-0 z-[60] -ml-4 -mt-4 h-8 w-8 rounded-full border border-brand/70 mix-blend-difference will-change-transform"
       />
       <div
         ref={dotRef}
         aria-hidden
-        className="pointer-events-none fixed left-0 top-0 z-[60] -ml-1 -mt-1 h-2 w-2 rounded-full bg-brand"
+        className="pointer-events-none fixed left-0 top-0 z-[60] -ml-1 -mt-1 h-2 w-2 rounded-full bg-brand will-change-transform"
       />
     </>
   );
