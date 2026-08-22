@@ -100,6 +100,11 @@ export default function RootLayout({
           fontSerif.variable
         )}
       >
+        {/* Ambient layers sit behind everything at negative z-index and never
+            repaint with content. Both are pure CSS — no image request. */}
+        <div className="ambient-wash" aria-hidden />
+        <div className="grain" aria-hidden />
+
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
