@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/motion/reveal";
-import { TRACK_ORDER, getWork, groupOrdered } from "@/lib/content";
+import { TRACK_ORDER, byKind, getTimeline, getWork, groupOrdered } from "@/lib/content";
 import type { WorkEntry } from "@/lib/content/types";
-import { DATA } from "@/data/resume";
+
 
 export const metadata: Metadata = {
   title: "Work",
@@ -89,7 +89,12 @@ function WorkCard({ entry }: { entry: WorkEntry }) {
 }
 
 export default async function WorkPage() {
-  const entries = await getWork();
+  const [entries, timeline] = await Promise.all([getWork(), getTimeline()]);
+  // The employment history drives the intro sentence; the work *threads* below
+  // are a separate collection with its own tracks.
+  const roles = byKind(timeline, "work");
+  const current = roles[0];
+  const first = roles[roles.length - 1];
   const tracks = groupOrdered(entries, (e) => e.track, TRACK_ORDER);
 
   // Roll every metric up into the header so the page leads with scale.
@@ -107,18 +112,21 @@ export default async function WorkPage() {
             <span className="font-serif font-normal italic">shipping</span>
           </h1>
           <p className="max-w-lg text-sm leading-relaxed text-muted-foreground">
-            {DATA.work[0].title} at{" "}
+            {current?.role ?? "Software Engineer"} at{" "}
             <Link
-              href={DATA.work[0].href}
+              href={current?.href ?? "#"}
               target="_blank"
               data-cursor
               className="text-foreground underline underline-offset-2"
             >
-              Ignosis
+              {current?.org ?? "Ignosis"}
             </Link>{" "}
-            since {DATA.work[0].start}, after converting from an internship that started{" "}
-            {DATA.work[1].start}. This is what the work adds up to, grouped by the kind of
-            problem rather than by quarter.
+            since {current?.period_start}
+            {first && first !== current
+              ? `, after converting from an internship that started ${first.period_start}`
+              : ""}
+            . This is what the work adds up to, grouped by the kind of problem rather
+            than by quarter.
           </p>
           <p className="max-w-lg text-xs leading-relaxed text-muted-foreground/70">
             Capability and scale only — no client names, no ticket references, no internal

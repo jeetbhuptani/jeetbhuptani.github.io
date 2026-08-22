@@ -72,3 +72,128 @@ export type BookOverride = {
   /** Pin to the front of its shelf. */
   featured: boolean;
 };
+
+// ---------------------------------------------------------------------------
+// The rest of the site content, migrated out of src/data/resume.tsx and
+// content/*.mdx. Same rule as above: field names mirror the Postgres columns.
+// ---------------------------------------------------------------------------
+
+/**
+ * A link rendered on a card. `icon` is a *name*, resolved to a component at
+ * render time by iconByName() — a database cannot store a component reference,
+ * and putting JSX in the data layer is what made resume.tsx a .tsx file.
+ */
+export type ContentLink = {
+  label: string;
+  href: string;
+  icon?: string;
+};
+
+/** Singleton row: who the site is about. */
+export type Profile = {
+  id: string;
+  name: string;
+  initials: string;
+  url: string;
+  location: string;
+  location_link: string | null;
+  /** ISO date; the hero computes a live age from it. */
+  birth_date: string | null;
+  description: string;
+  summary: string;
+  avatar_url: string | null;
+  email: string;
+  tel: string | null;
+};
+
+export type SocialLink = {
+  id: string;
+  name: string;
+  url: string;
+  icon: string;
+  /** Whether it appears in the navbar dock and the hero row. */
+  navbar: boolean;
+  sort_order: number;
+};
+
+export type NavItem = {
+  id: string;
+  href: string;
+  label: string;
+  icon: string;
+  sort_order: number;
+};
+
+/** work / volunteer / education share a shape: org, role, period, blurb. */
+export type TimelineEntry = {
+  id: string;
+  kind: "work" | "volunteer" | "education";
+  org: string;
+  /** Job title, or the degree for education rows. */
+  role: string;
+  href: string | null;
+  logo_url: string | null;
+  location: string | null;
+  period_start: string;
+  period_end: string | null;
+  description: string | null;
+  badges: string[];
+  sort_order: number;
+  published: boolean;
+};
+
+/** `showcase` renders under Work; `project` renders in the Projects rail. */
+export type Project = {
+  id: string;
+  kind: "project" | "showcase";
+  title: string;
+  href: string | null;
+  dates: string;
+  active: boolean;
+  description: string;
+  technologies: string[];
+  links: ContentLink[];
+  image: string | null;
+  video: string | null;
+  motif: string | null;
+  sort_order: number;
+  published: boolean;
+};
+
+export type Hackathon = {
+  id: string;
+  title: string;
+  dates: string;
+  location: string;
+  description: string;
+  image: string | null;
+  links: ContentLink[];
+  sort_order: number;
+  published: boolean;
+};
+
+export type Certificate = {
+  id: string;
+  title: string;
+  issuer: string;
+  date_label: string;
+  description: string | null;
+  image: string | null;
+  credential_id: string | null;
+  links: ContentLink[];
+  sort_order: number;
+  published: boolean;
+};
+
+/** Blog post. `body` is raw markdown, rendered through the same unified chain
+ *  the .mdx files used — only the source moved. */
+export type Post = {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string;
+  body: string;
+  image: string | null;
+  published_at: string;
+  published: boolean;
+};

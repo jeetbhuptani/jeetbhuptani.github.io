@@ -10,18 +10,19 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import Markdown from "react-markdown";
+import { ContentIcon } from "@/components/icon-by-name";
 
 interface Props {
   title: string;
   issuer: string;
   date: string;
-  description?: string;
-  image?: string;
-  credentialId?: string;
+  description?: string | null;
+  image?: string | null;
+  credentialId?: string | null;
   links?: readonly {
-    type: string;
+    label: string;
     href: string;
-    icon: React.ReactNode;
+    icon?: string | null;
   }[];
   className?: string;
 }
@@ -83,8 +84,8 @@ export function CertificateCard({
             {links?.map((link, idx) => (
               <Link href={link?.href} key={idx} target="_blank">
                 <Badge key={idx} className="flex gap-2 px-2 py-1 text-[10px]">
-                  {link.icon}
-                  {link.type}
+                  <ContentIcon name={link.icon} />
+                  {link.label}
                 </Badge>
               </Link>
             ))}

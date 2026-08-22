@@ -2,8 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { ShowcaseMotif } from "@/components/showcase-motif";
+import { ContentIcon } from "@/components/icon-by-name";
 
-type ProjectLink = { type: string; href: string; icon?: React.ReactNode };
+type ProjectLink = { label: string; href: string; icon?: string | null };
 
 /**
  * Rebuilt project card: media on top, mono date, description, monospace tech
@@ -22,13 +23,13 @@ export function ProjectCard({
   links,
 }: {
   title: string;
-  href?: string;
+  href?: string | null;
   description: string;
   dates: string;
   tags?: readonly string[];
-  image?: string;
-  video?: string;
-  motif?: "collections" | "voice";
+  image?: string | null;
+  video?: string | null;
+  motif?: string | null;
   links?: readonly ProjectLink[];
 }) {
   return (
@@ -90,7 +91,7 @@ export function ProjectCard({
           <div className="flex flex-wrap gap-2 pt-1">
             {links.map((link) => (
               <Link
-                key={link.type}
+                key={link.label}
                 href={link.href}
                 target="_blank"
                 data-cursor
@@ -99,8 +100,8 @@ export function ProjectCard({
                   "text-xs transition-colors hover:border-brand/50 hover:text-brand"
                 )}
               >
-                {link.icon}
-                {link.type}
+                <ContentIcon name={link.icon} />
+                {link.label}
               </Link>
             ))}
           </div>
