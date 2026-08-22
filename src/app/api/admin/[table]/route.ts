@@ -62,12 +62,138 @@ const bookSchema = z.object({
   featured: z.boolean().default(false),
 });
 
+
+// ---- migration 0002 collections ----
+
+const linkSchema = z.object({
+  label: z.string().min(1).max(60),
+  href: z.string().min(1).max(500),
+  icon: z.string().max(80).optional(),
+});
+
+const profileSchema = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string().min(1).max(120),
+  initials: z.string().max(8).default(""),
+  url: z.string().max(200).default(""),
+  location: z.string().max(120).default(""),
+  location_link: z.string().max(500).nullable().optional(),
+  birth_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
+  description: z.string().max(1000).default(""),
+  summary: z.string().max(4000).default(""),
+  avatar_url: z.string().max(500).nullable().optional(),
+  email: z.string().max(200).default(""),
+  tel: z.string().max(40).nullable().optional(),
+  // The unique index on this column is what keeps profile a singleton.
+  singleton: z.literal(true).default(true),
+});
+
+const socialSchema = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string().min(1).max(60),
+  url: z.string().min(1).max(500),
+  icon: z.string().max(80).default("globe"),
+  navbar: z.boolean().default(true),
+  sort_order: z.number().int().default(100),
+});
+
+const navSchema = z.object({
+  id: z.string().uuid().optional(),
+  href: z.string().min(1).max(200),
+  label: z.string().min(1).max(60),
+  icon: z.string().max(80).default("globe"),
+  sort_order: z.number().int().default(100),
+});
+
+const timelineSchema = z.object({
+  id: z.string().uuid().optional(),
+  kind: z.enum(["work", "volunteer", "education"]),
+  org: z.string().min(1).max(200),
+  role: z.string().max(200).default(""),
+  href: z.string().max(500).nullable().optional(),
+  logo_url: z.string().max(500).nullable().optional(),
+  location: z.string().max(120).nullable().optional(),
+  period_start: z.string().max(40).default(""),
+  period_end: z.string().max(40).nullable().optional(),
+  description: z.string().max(3000).nullable().optional(),
+  badges: z.array(z.string().max(60)).max(10).default([]),
+  sort_order: z.number().int().default(100),
+  published: z.boolean().default(true),
+});
+
+const projectSchema = z.object({
+  id: z.string().uuid().optional(),
+  kind: z.enum(["project", "showcase"]).default("project"),
+  title: z.string().min(1).max(200),
+  href: z.string().max(500).nullable().optional(),
+  dates: z.string().max(80).default(""),
+  active: z.boolean().default(true),
+  description: z.string().max(3000).default(""),
+  technologies: z.array(z.string().max(60)).max(40).default([]),
+  links: z.array(linkSchema).max(10).default([]),
+  image: z.string().max(500).nullable().optional(),
+  video: z.string().max(500).nullable().optional(),
+  motif: z.string().max(60).nullable().optional(),
+  sort_order: z.number().int().default(100),
+  published: z.boolean().default(true),
+});
+
+const hackathonSchema = z.object({
+  id: z.string().uuid().optional(),
+  title: z.string().min(1).max(200),
+  dates: z.string().max(80).default(""),
+  location: z.string().max(120).default(""),
+  description: z.string().max(3000).default(""),
+  image: z.string().max(500).nullable().optional(),
+  links: z.array(linkSchema).max(10).default([]),
+  sort_order: z.number().int().default(100),
+  published: z.boolean().default(true),
+});
+
+const certificateSchema = z.object({
+  id: z.string().uuid().optional(),
+  title: z.string().min(1).max(300),
+  issuer: z.string().max(120).default(""),
+  date_label: z.string().max(60).default(""),
+  description: z.string().max(2000).nullable().optional(),
+  image: z.string().max(500).nullable().optional(),
+  credential_id: z.string().max(200).nullable().optional(),
+  links: z.array(linkSchema).max(10).default([]),
+  sort_order: z.number().int().default(100),
+  published: z.boolean().default(true),
+});
+
+const postSchema = z.object({
+  id: z.string().uuid().optional(),
+  // Slugs are the URL, so restrict them rather than accepting free text.
+  slug: z.string().min(1).max(120).regex(/^[A-Za-z0-9_-]+$/, "letters, numbers, - and _ only"),
+  title: z.string().min(1).max(300),
+  summary: z.string().max(1000).default(""),
+  body: z.string().max(200000).default(""),
+  image: z.string().max(500).nullable().optional(),
+  published_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "expected yyyy-MM-dd"),
+  published: z.boolean().default(true),
+});
+
 /** Table registry: schema, primary key, and which public paths to bust. */
 const TABLES = {
   work_entries: { schema: workSchema, pk: "id", paths: ["/work", "/"] },
   life_entries: { schema: lifeSchema, pk: "id", paths: ["/life"] },
   skills: { schema: skillSchema, pk: "id", paths: ["/", "/work"] },
   book_overrides: { schema: bookSchema, pk: "slug", paths: ["/bookshelf"] },
+  // migration 0002. `profile`, socials and nav render in the root layout, so a
+  // change to any of them has to bust every page, not just one.
+  profile: { schema: profileSchema, pk: "singleton", paths: ["/", "/work", "/blog", "/life", "/bookshelf", "/certificate"] },
+  social_links: { schema: socialSchema, pk: "id", paths: ["/", "/work", "/blog", "/life", "/bookshelf", "/certificate"] },
+  nav_items: { schema: navSchema, pk: "id", paths: ["/", "/work", "/blog", "/life", "/bookshelf", "/certificate"] },
+  timeline_entries: { schema: timelineSchema, pk: "id", paths: ["/", "/work"] },
+  projects: { schema: projectSchema, pk: "id", paths: ["/"] },
+  hackathons: { schema: hackathonSchema, pk: "id", paths: ["/"] },
+  certificates: { schema: certificateSchema, pk: "id", paths: ["/certificate"] },
+  // The post's own page is /blog/<slug>, which the static list cannot name —
+  // without this an edit would refresh the index and leave the post itself
+  // showing the pre-edit content.
+  posts: { schema: postSchema, pk: "id", paths: ["/blog"], dynamicPath: (row: any) => `/blog/${row.slug}` },
 } as const;
 
 type TableName = keyof typeof TABLES;
@@ -128,6 +254,9 @@ export async function POST(req: NextRequest, { params }: { params: { table: stri
   // re-render against a stale cached query and show the pre-edit content.
   revalidateTag(CONTENT_TAG);
   config.paths.forEach((p) => revalidatePath(p));
+  if ("dynamicPath" in config && data) {
+    revalidatePath((config.dynamicPath as (r: any) => string)(data));
+  }
   return NextResponse.json({ ok: true, row: data });
 }
 

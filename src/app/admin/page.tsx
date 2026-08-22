@@ -13,8 +13,34 @@ import {
   SkillsEditor,
   WorkEditor,
 } from "@/components/admin/editors";
+import {
+  CERTIFICATE_FIELDS,
+  HACKATHON_FIELDS,
+  NAV_FIELDS,
+  POST_FIELDS,
+  PROFILE_FIELDS,
+  PROJECT_FIELDS,
+  SOCIAL_FIELDS,
+  TIMELINE_FIELDS,
+  BLANKS,
+} from "@/components/admin/field-specs";
+import { RecordEditor } from "@/components/admin/record-editor";
 import { getBookshelf } from "@/lib/books";
-import { bookSlug, getBookOverrides, getLife, getSkills, getWork } from "@/lib/content";
+import {
+  bookSlug,
+  getBookOverrides,
+  getCertificates,
+  getHackathons,
+  getLife,
+  getNavItems,
+  getProfile,
+  getProjects,
+  getSkills,
+  getSocials,
+  getTimeline,
+  getWork,
+} from "@/lib/content";
+import { getPostRows } from "@/lib/content/posts";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getAdminState } from "@/lib/supabase/auth";
 
@@ -28,11 +54,38 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 const TABS = [
-  { id: "work", label: "Work" },
+  { id: "profile", label: "Profile" },
+  { id: "timeline", label: "Timeline" },
+  { id: "work", label: "Work threads" },
+  { id: "projects", label: "Projects" },
+  { id: "posts", label: "Blog" },
   { id: "life", label: "Life" },
   { id: "skills", label: "Skills" },
   { id: "books", label: "Books" },
+  { id: "hackathons", label: "Hackathons" },
+  { id: "certificates", label: "Certificates" },
+  { id: "socials", label: "Socials" },
+  { id: "nav", label: "Nav" },
 ];
+
+function Panel({
+  id,
+  title,
+  children,
+}: {
+  id: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section id={id} className="scroll-mt-8 space-y-3">
+      <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
+        {title}
+      </h2>
+      {children}
+    </section>
+  );
+}
 
 export default async function AdminPage() {
   if (!isSupabaseConfigured()) {
@@ -73,12 +126,23 @@ export default async function AdminPage() {
   // Verified admin at AAL2 from here on.
   // fresh=true: the editors must show what is actually in the database right
   // now, never a cached copy — otherwise a save appears to have done nothing.
-  const [work, life, skills, shelf, overrides] = await Promise.all([
+  const [
+    work, life, skills, shelf, overrides,
+    profile, socials, navItems, timeline, projects, hackathons, certificates, posts,
+  ] = await Promise.all([
     getWork(true),
     getLife(true),
     getSkills(true),
     getBookshelf(),
     getBookOverrides(true),
+    getProfile(true),
+    getSocials(true),
+    getNavItems(true),
+    getTimeline(true),
+    getProjects(true),
+    getHackathons(true),
+    getCertificates(true),
+    getPostRows(true),
   ]);
 
   const books = shelf.books.map((b) => ({
@@ -123,6 +187,27 @@ export default async function AdminPage() {
         ))}
       </nav>
 
+      <Panel id="profile" title="Profile — name, bio, contact">
+        <RecordEditor
+          table="profile"
+          fields={PROFILE_FIELDS}
+          rows={[profile]}
+          blank={BLANKS.profile}
+          singleton
+        />
+      </Panel>
+
+      <Panel id="timeline" title="Timeline — work, volunteering, education">
+        <RecordEditor
+          table="timeline_entries"
+          fields={TIMELINE_FIELDS}
+          rows={timeline}
+          blank={BLANKS.timeline_entries}
+          titleKey="org"
+          subtitleKey="role"
+        />
+      </Panel>
+
       <section id="work" className="scroll-mt-8 space-y-3">
         <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
           Work timeline
@@ -153,6 +238,68 @@ export default async function AdminPage() {
           overrides={Object.fromEntries(overrides)}
         />
       </section>
+
+      <Panel id="projects" title="Projects & Ignosis showcase">
+        <RecordEditor
+          table="projects"
+          fields={PROJECT_FIELDS}
+          rows={projects}
+          blank={BLANKS.projects}
+          subtitleKey="kind"
+        />
+      </Panel>
+
+      <Panel id="posts" title="Blog posts">
+        <RecordEditor
+          table="posts"
+          fields={POST_FIELDS}
+          rows={posts}
+          blank={BLANKS.posts}
+          subtitleKey="slug"
+        />
+      </Panel>
+
+      <Panel id="hackathons" title="Hackathons">
+        <RecordEditor
+          table="hackathons"
+          fields={HACKATHON_FIELDS}
+          rows={hackathons}
+          blank={BLANKS.hackathons}
+          subtitleKey="dates"
+        />
+      </Panel>
+
+      <Panel id="certificates" title="Certificates">
+        <RecordEditor
+          table="certificates"
+          fields={CERTIFICATE_FIELDS}
+          rows={certificates}
+          blank={BLANKS.certificates}
+          subtitleKey="issuer"
+        />
+      </Panel>
+
+      <Panel id="socials" title="Social links">
+        <RecordEditor
+          table="social_links"
+          fields={SOCIAL_FIELDS}
+          rows={socials}
+          blank={BLANKS.social_links}
+          titleKey="name"
+          subtitleKey="url"
+        />
+      </Panel>
+
+      <Panel id="nav" title="Navbar items">
+        <RecordEditor
+          table="nav_items"
+          fields={NAV_FIELDS}
+          rows={navItems}
+          blank={BLANKS.nav_items}
+          titleKey="label"
+          subtitleKey="href"
+        />
+      </Panel>
     </main>
   );
 }
