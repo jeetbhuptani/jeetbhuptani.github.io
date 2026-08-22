@@ -109,10 +109,21 @@ function Spine({ book }: { book: ResolvedBook }) {
         ) : null}
       </div>
 
+      {/* Every row in the caption is height-reserved, so all spines on a shelf
+          are the same height and their covers line up along the plank.
+          Previously an unrated book had no star row, which made its figure 24px
+          shorter — and because the shelf is `items-end`, that pushed its cover
+          24px *down*. Unrated books visibly sagged out of line. Reserving the
+          star row fixes that; the 2-line title reserve stops a one-line title
+          reintroducing the same thing. */}
       <figcaption className="mt-1.5 space-y-0.5">
-        <p className="line-clamp-2 text-[10px] font-medium leading-tight">{book.title}</p>
+        <p className="line-clamp-2 min-h-[2.5em] text-[10px] font-medium leading-tight">
+          {book.title}
+        </p>
         <p className="line-clamp-1 text-[9px] text-muted-foreground">{book.author}</p>
-        {book.rating ? <Stars rating={book.rating} /> : null}
+        <span className="flex h-3 items-center">
+          {book.rating ? <Stars rating={book.rating} /> : null}
+        </span>
       </figcaption>
     </figure>
   );
@@ -136,7 +147,11 @@ export function GenreShelf({ genre, books }: { genre: string; books: ResolvedBoo
       </div>
 
       <div className="relative">
-        <div className="flex items-end gap-2.5 overflow-x-auto pb-3 pt-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {/* items-start, not items-end: the cover is the first child and every
+            cover is the same height, so aligning tops guarantees the spines
+            line up even if a caption below them ever differs in height.
+            items-end made cover position depend on caption height. */}
+        <div className="flex items-start gap-2.5 overflow-x-auto pb-3 pt-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {books.map((b) => (
             <Spine key={`${b.title}-${b.author}`} book={b} />
           ))}
