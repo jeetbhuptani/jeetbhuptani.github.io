@@ -10,7 +10,8 @@
     "lint": "next lint",
     "postbuild": "next-sitemap",
     "test": "vitest run",
-    "seed": "node --env-file=.env.local scripts/seed-supabase.mts"
+    "seed": "node --env-file=.env.local scripts/seed-supabase.mts",
+    "seed:full": "node --env-file=.env.local scripts/seed-full.mts"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.0.4",
