@@ -9,7 +9,6 @@ import { Reveal, StaggerGroup, StaggerItem } from "@/components/motion/reveal";
 import { ProjectCard } from "@/components/project-card";
 import { Section } from "@/components/section";
 import { Bookshelf } from "@/components/widgets/bookshelf";
-import { LiveRail } from "@/components/live-rail";
 import { ContentIcon } from "@/components/icon-by-name";
 import { MoreLink } from "@/components/more-link";
 import { SkillGrid } from "@/components/skill-grid";
@@ -62,7 +61,6 @@ export default async function Page() {
 
   return (
     <main className="flex flex-col gap-16 sm:gap-20">
-      <LiveRail />
       {/* Hero */}
       <section id="hero" className="relative">
         <div

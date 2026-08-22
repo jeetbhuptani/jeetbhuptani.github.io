@@ -5,9 +5,6 @@ const nextConfig = {
   // image host a widget loads must be listed here or next/image returns 500.
   images: {
     remotePatterns: [
-      { protocol: "https", hostname: "i.scdn.co" }, // Spotify album art
-      { protocol: "https", hostname: "image-cdn-ak.spotifycdn.com" },
-      { protocol: "https", hostname: "image-cdn-fa.spotifycdn.com" },
       { protocol: "https", hostname: "assets.hardcover.app" }, // Hardcover covers
       { protocol: "https", hostname: "images.hardcover.app" },
       { protocol: "https", hostname: "images-na.ssl-images-amazon.com" }, // Goodreads covers

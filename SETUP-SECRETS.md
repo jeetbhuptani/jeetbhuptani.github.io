@@ -33,23 +33,6 @@ HARDCOVER_API_TOKEN=
 
 > Note: Hardcover tokens expire ~yearly (reset Jan 1). Set a reminder to refresh.
 
-## 3. Spotify (now playing) — the multi-step one
-
-You mint a **refresh token once**; it then lasts indefinitely.
-
-1. https://developer.spotify.com/dashboard → **Create app**.
-   - Redirect URI: **`http://127.0.0.1:8888/callback`** (must be `127.0.0.1`, not
-     `localhost`, and not a public `http://` URL — Spotify's 2025 OAuth rules).
-   - Copy the **Client ID** and **Client Secret**.
-2. Tell me when you have those two — I'll give you a tiny one-shot script that opens
-   the auth page, you approve, and it prints your **refresh token**.
-
-```
-SPOTIFY_CLIENT_ID=
-SPOTIFY_CLIENT_SECRET=
-SPOTIFY_REFRESH_TOKEN=xxx   # minted via the script in step 2
-```
-
 ## 4. Instagram (optional / decide later)
 
 Default is **token-free embeds** (you pick which posts show) — needs nothing here.
@@ -198,9 +181,6 @@ See `.env.example` for the full annotated list. Short version:
 ```
 GITHUB_TOKEN=
 HARDCOVER_API_TOKEN=
-SPOTIFY_CLIENT_ID=
-SPOTIFY_CLIENT_SECRET=
-SPOTIFY_REFRESH_TOKEN=
 
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
