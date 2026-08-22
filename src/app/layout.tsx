@@ -104,9 +104,9 @@ export default async function RootLayout({
           fontSerif.variable
         )}
       >
-        {/* Ambient layers sit behind everything at negative z-index and never
-            repaint with content. Both are pure CSS — no image request. */}
-        <div className="ambient-wash" aria-hidden />
+        {/* Monochrome grain only — the background itself is flat. Sits at a
+            negative z-index on its own layer, so it never repaints with
+            content. Pure CSS, no image request. */}
         <div className="grain" aria-hidden />
 
         <ThemeProvider
