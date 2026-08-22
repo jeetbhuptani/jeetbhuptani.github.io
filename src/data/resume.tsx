@@ -1,12 +1,11 @@
 import { Icons } from "@/components/icons";
-import { Certificate } from "crypto";
 import { HomeIcon, NotebookIcon } from "lucide-react";
 import Image from "next/image";
 
 export const DATA = {
   name: "Jeet Bhuptani",
   initials: "JB",
-  url: "https://jeetbhuptani.me",
+  url: "https://jeetbhuptani.tech",
   location: "Ahmedabad, GUJ, India",
   locationLink: "https://www.google.com/maps/place/ahmedabad",
   birthDate: "2004-08-01",
