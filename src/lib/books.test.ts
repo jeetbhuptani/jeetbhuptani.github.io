@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { normalizeHardcover, parseGoodreadsRss, normalizeShelf } from "./books";
+import { normalizeHardcover, parseGoodreadsRss, normalizeShelf, pickGenre } from "./books";
 
 describe("normalizeHardcover", () => {
   it("maps the live Hardcover currently-reading shape", () => {
@@ -59,6 +59,35 @@ describe("parseGoodreadsRss", () => {
 });
 
 describe("normalizeShelf", () => {
+  it("labels status_id 5 as dnf, not as read", () => {
+    const shelf = normalizeShelf({
+      me: [
+        {
+          user_books: [
+            { status_id: 5, book: { title: "Abandoned", contributions: [] } },
+          ],
+        },
+      ],
+    });
+    expect(shelf[0]).toMatchObject({ title: "Abandoned", status: "dnf" });
+  });
+
+  it("carries the rating through only when Hardcover returns a number", () => {
+    const shelf = normalizeShelf({
+      me: [
+        {
+          user_books: [
+            { status_id: 3, rating: 4.5, book: { title: "Rated" } },
+            { status_id: 3, rating: null, book: { title: "Unrated" } },
+          ],
+        },
+      ],
+    });
+    expect(shelf.find((b) => b.title === "Rated")?.rating).toBe(4.5);
+    // null must not become 0 — "unrated" and "rated zero" are different.
+    expect(shelf.find((b) => b.title === "Unrated")?.rating).toBeUndefined();
+  });
+
   it("labels status_id 2 as reading and 3 as read", () => {
     const data = {
       me: [
@@ -74,5 +103,28 @@ describe("normalizeShelf", () => {
     expect(shelf).toHaveLength(2);
     expect(shelf[0]).toMatchObject({ title: "The Metamorphosis", author: "Kafka", status: "read" });
     expect(shelf[1]).toMatchObject({ title: "Corporate Chanakya", status: "reading" });
+  });
+});
+
+describe("pickGenre", () => {
+  const tag = (t: string, count: number) => ({ tag: t, count });
+
+  it("prefers the highest-count genre", () => {
+    expect(pickGenre({ Genre: [tag("Finance", 4), tag("Money", 1)] })).toBe("Finance");
+  });
+
+  it("skips catch-all genres in favour of something specific", () => {
+    // "Fiction" wins on count but says nothing about the book.
+    expect(pickGenre({ Genre: [tag("Fiction", 9), tag("Suspense", 2)] })).toBe("Suspense");
+  });
+
+  it("falls back to the catch-all when it is the only tag", () => {
+    expect(pickGenre({ Genre: [tag("Fiction", 9)] })).toBe("Fiction");
+  });
+
+  it("returns undefined when there are no genre tags", () => {
+    expect(pickGenre({ Genre: [] })).toBeUndefined();
+    expect(pickGenre(undefined)).toBeUndefined();
+    expect(pickGenre({})).toBeUndefined();
   });
 });
