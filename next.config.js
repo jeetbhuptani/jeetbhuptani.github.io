@@ -12,6 +12,7 @@ const nextConfig = {
       { protocol: "https", hostname: "images.hardcover.app" },
       { protocol: "https", hostname: "images-na.ssl-images-amazon.com" }, // Goodreads covers
       { protocol: "https", hostname: "i.gr-assets.com" },
+      { protocol: "https", hostname: "res.cloudinary.com" }, // /life media
       { protocol: "https", hostname: "avatars.githubusercontent.com" }, // GitHub avatars
       { protocol: "https", hostname: "*.cdninstagram.com" }, // Instagram media
       { protocol: "https", hostname: "*.fbcdn.net" },
