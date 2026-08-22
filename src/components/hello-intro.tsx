@@ -16,13 +16,27 @@ export function HelloIntro() {
   const reduce = useReducedMotion();
   const [show, setShow] = useState(false);
 
+  // Decide whether to show, exactly once.
+  //
+  // This deliberately does NOT depend on `reduce`. useReducedMotion() returns
+  // null on the first render and resolves to a boolean immediately after, so a
+  // single effect keyed on [reduce] would: show the intro and write the session
+  // key, then re-run on the resolved value, clear its own timeout, hit the
+  // early return because the key it just wrote is now set, and never schedule
+  // the dismissal again. The overlay stayed up until a manual reload.
   useEffect(() => {
     if (sessionStorage.getItem(SESSION_KEY)) return;
-    setShow(true);
     sessionStorage.setItem(SESSION_KEY, "1");
+    setShow(true);
+  }, []);
+
+  // Dismiss. Re-runs harmlessly if `reduce` resolves mid-intro, because the
+  // timer is always re-armed rather than only cleared.
+  useEffect(() => {
+    if (!show) return;
     const t = setTimeout(() => setShow(false), reduce ? 900 : 2400);
     return () => clearTimeout(t);
-  }, [reduce]);
+  }, [show, reduce]);
 
   return (
     <AnimatePresence>
