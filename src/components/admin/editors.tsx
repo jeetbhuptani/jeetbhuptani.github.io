@@ -1,8 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
+import { useToast } from "@/components/admin/toast";
+import { DraftBadge, PublishHint } from "@/components/admin/draft-badge";
 import type { BookOverride, LifeEntry, Skill, WorkEntry } from "@/lib/content/types";
 import { cn } from "@/lib/utils";
 
@@ -27,12 +29,21 @@ const toLines = (v: string[]) => v.join("\n");
 const fromLines = (v: string) =>
   v.split("\n").map((s) => s.trim()).filter(Boolean);
 
+/**
+ * Save/delete against one table, with a toast for every outcome.
+ *
+ * `what` is the human name of the record, so a toast can say what was saved
+ * rather than "Saved". A save that lands with published:false says so
+ * explicitly — an unpublished row is written to the database and hidden from
+ * the site, and the two used to be indistinguishable from here.
+ */
 function useSave(table: string) {
   const router = useRouter();
+  const toast = useToast();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function save(payload: unknown) {
+  async function save(payload: unknown, what?: string) {
     setBusy(true);
     setError(null);
     const res = await fetch(`/api/admin/${table}`, {
@@ -43,22 +54,57 @@ function useSave(table: string) {
     setBusy(false);
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
-      setError(body.issues?.[0]?.message ?? body.error ?? `Failed (${res.status})`);
+      const message = body.issues?.[0]?.message ?? body.error ?? `Failed (${res.status})`;
+      setError(message);
+      toast({
+        kind: "error",
+        title: `Couldn’t save${what ? ` “${what}”` : ""}`,
+        detail: `${table}: ${message}`,
+      });
       return false;
     }
+    const body = await res.json().catch(() => ({}));
+    const isDraft = body?.row && body.row.published === false;
+    toast({
+      kind: "success",
+      title: isDraft ? `Saved as draft${what ? `: “${what}”` : ""}` : `Saved${what ? `: “${what}”` : ""}`,
+      detail: isDraft
+        ? "Written to the database, but hidden from the site until you tick Published."
+        : `Live on the site now — ${table} refreshed.`,
+    });
     router.refresh();
     return true;
   }
 
-  async function remove(id: string) {
+  async function remove(id: string, what?: string) {
     if (!confirm("Delete this entry? This cannot be undone.")) return;
     setBusy(true);
     const res = await fetch(`/api/admin/${table}?id=${encodeURIComponent(id)}`, {
       method: "DELETE",
     });
     setBusy(false);
-    if (res.ok) router.refresh();
-    else setError(`Delete failed (${res.status})`);
+    if (!res.ok) {
+      setError(`Delete failed (${res.status})`);
+      toast({ kind: "error", title: "Delete failed", detail: `${table}: HTTP ${res.status}` });
+      return;
+    }
+    const body = await res.json().catch(() => ({}));
+    // The route also destroys the row's Cloudinary asset; say which way it went
+    // so a leaked image is visible rather than assumed.
+    const media = body?.media as
+      | { publicId: string; deleted: boolean; reason?: string }
+      | null
+      | undefined;
+    toast({
+      kind: media && !media.deleted ? "info" : "success",
+      title: `Deleted${what ? `: “${what}”` : ""}`,
+      detail: media
+        ? media.deleted
+          ? `Cloudinary asset ${media.publicId} deleted too.`
+          : `Image kept: ${media.reason ?? "unknown reason"} (${media.publicId}).`
+        : undefined,
+    });
+    router.refresh();
   }
 
   return { save, remove, busy, error };
@@ -67,11 +113,13 @@ function useSave(table: string) {
 function Row({
   title,
   subtitle,
+  published = true,
   children,
   defaultOpen = false,
 }: {
   title: string;
   subtitle?: string;
+  published?: boolean;
   children: React.ReactNode;
   defaultOpen?: boolean;
 }) {
@@ -90,13 +138,16 @@ function Row({
             </span>
           ) : null}
         </span>
-        <span
-          className={cn(
-            "shrink-0 font-mono text-[10px] text-muted-foreground transition-transform",
-            open && "rotate-90"
-          )}
-        >
-          ▸
+        <span className="flex shrink-0 items-center gap-2">
+          <DraftBadge published={published} />
+          <span
+            className={cn(
+              "font-mono text-[10px] text-muted-foreground transition-transform",
+              open && "rotate-90"
+            )}
+          >
+            ▸
+          </span>
         </span>
       </button>
       {open ? <div className="space-y-2.5 border-t border-border px-3 py-3">{children}</div> : null}
@@ -153,8 +204,8 @@ function WorkForm({
   entry: WorkEntry;
   isNew: boolean;
   busy: boolean;
-  onSave: (p: unknown) => Promise<boolean>;
-  onDelete: (id: string) => void;
+  onSave: (p: unknown, what?: string) => Promise<boolean>;
+  onDelete: (id: string, what?: string) => void;
 }) {
   const [form, setForm] = useState(entry);
   const set = <K extends keyof WorkEntry>(k: K, v: WorkEntry[K]) =>
@@ -164,6 +215,7 @@ function WorkForm({
     <Row
       title={isNew ? "+ New work entry" : form.title || "(untitled)"}
       subtitle={isNew ? undefined : `${form.track} · ${form.period_start}`}
+      published={isNew || form.published}
     >
       <div className="grid grid-cols-2 gap-2.5">
         <div className="col-span-2">
@@ -244,8 +296,8 @@ function WorkForm({
         busy={busy}
         published={form.published}
         onTogglePublished={() => set("published", !form.published)}
-        onSave={() => onSave(isNew ? stripId(form) : form)}
-        onDelete={isNew ? undefined : () => onDelete(form.id)}
+        onSave={() => onSave(isNew ? stripId(form) : form, form.title)}
+        onDelete={isNew ? undefined : () => onDelete(form.id, form.title)}
       />
     </Row>
   );
@@ -294,12 +346,16 @@ function LifeForm({
   entry: LifeEntry;
   isNew: boolean;
   busy: boolean;
-  onSave: (p: unknown) => Promise<boolean>;
-  onDelete: (id: string) => void;
+  onSave: (p: unknown, what?: string) => Promise<boolean>;
+  onDelete: (id: string, what?: string) => void;
 }) {
   const [form, setForm] = useState(entry);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const toast = useToast();
+  /** State updates are async, so `disabled={uploading}` alone still let a fast
+   *  second pick start a parallel upload. A ref flips synchronously. */
+  const inFlight = useRef(false);
   const set = <K extends keyof LifeEntry>(k: K, v: LifeEntry[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
 
@@ -307,35 +363,63 @@ function LifeForm({
    * Signed direct-to-Cloudinary upload: the file goes browser -> Cloudinary and
    * never transits this app, which keeps it clear of Vercel's request body
    * limit and is the only way videos are practical on the free tier.
+   *
+   * The asset is named after a hash of its own bytes, so uploading the same
+   * photo again overwrites the existing asset instead of adding another copy.
+   * Between that and the in-flight guard, the duplicate uploads that were
+   * filling the media account can't happen: a repeat pick is either blocked or
+   * idempotent.
    */
   async function upload(file: File) {
+    if (inFlight.current) return;
+    inFlight.current = true;
     setUploading(true);
     setUploadError(null);
     try {
-      const sigRes = await fetch("/api/admin/upload-signature", { method: "POST" });
+      const hash = await hashFile(file);
+
+      const sigRes = await fetch("/api/admin/upload-signature", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ publicId: hash }),
+      });
       if (!sigRes.ok) throw new Error("Could not get an upload signature.");
-      const { cloudName, apiKey, timestamp, folder, signature } = await sigRes.json();
+      const sig = await sigRes.json();
 
       const isVideo = file.type.startsWith("video/");
       const body = new FormData();
       body.append("file", file);
-      body.append("api_key", apiKey);
-      body.append("timestamp", String(timestamp));
-      body.append("folder", folder);
-      body.append("signature", signature);
+      body.append("api_key", sig.apiKey);
+      body.append("timestamp", String(sig.timestamp));
+      body.append("folder", sig.folder);
+      body.append("public_id", sig.public_id);
+      body.append("overwrite", String(sig.overwrite));
+      body.append("invalidate", String(sig.invalidate));
+      body.append("signature", sig.signature);
 
       const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudName}/${isVideo ? "video" : "image"}/upload`,
+        `https://api.cloudinary.com/v1_1/${sig.cloudName}/${isVideo ? "video" : "image"}/upload`,
         { method: "POST", body }
       );
-      if (!res.ok) throw new Error("Cloudinary rejected the upload.");
+      if (!res.ok) {
+        const detail = await res.json().catch(() => null);
+        throw new Error(detail?.error?.message ?? "Cloudinary rejected the upload.");
+      }
       const json = await res.json();
 
       set("media_id", json.public_id);
       set("media_type", isVideo ? "video" : "image");
+      toast({
+        kind: "success",
+        title: "Uploaded to Cloudinary",
+        detail: `${json.public_id} · ${Math.round((json.bytes ?? 0) / 1024)} KB. Not saved yet — hit Save to attach it.`,
+      });
     } catch (e) {
-      setUploadError(e instanceof Error ? e.message : "Upload failed.");
+      const message = e instanceof Error ? e.message : "Upload failed.";
+      setUploadError(message);
+      toast({ kind: "error", title: "Upload failed", detail: message });
     } finally {
+      inFlight.current = false;
       setUploading(false);
     }
   }
@@ -344,6 +428,7 @@ function LifeForm({
     <Row
       title={isNew ? "+ New life entry" : form.title || "(untitled)"}
       subtitle={isNew ? undefined : form.category}
+      published={isNew || form.published}
     >
       <div className="grid grid-cols-2 gap-2.5">
         <div className="col-span-2">
@@ -394,6 +479,9 @@ function LifeForm({
           disabled={uploading}
           onChange={(e) => {
             const file = e.target.files?.[0];
+            // Clearing the input means picking the same file again still fires
+            // onChange — which is now safe, because the upload is idempotent.
+            e.target.value = "";
             if (file) upload(file);
           }}
           className="w-full text-[11px] file:mr-2 file:rounded-md file:border file:border-border file:bg-secondary file:px-2 file:py-1 file:text-[10px]"
@@ -413,8 +501,8 @@ function LifeForm({
         busy={busy}
         published={form.published}
         onTogglePublished={() => set("published", !form.published)}
-        onSave={() => onSave(isNew ? stripId(form) : form)}
-        onDelete={isNew ? undefined : () => onDelete(form.id)}
+        onSave={() => onSave(isNew ? stripId(form) : form, form.title)}
+        onDelete={isNew ? undefined : () => onDelete(form.id, form.title)}
       />
     </Row>
   );
@@ -439,7 +527,7 @@ export function SkillsEditor({ skills }: { skills: Skill[] }) {
             {s.name}
             <span className="text-muted-foreground">{s.category}</span>
             <button
-              onClick={() => remove(s.id)}
+              onClick={() => remove(s.id, s.name)}
               disabled={busy}
               aria-label={`Delete ${s.name}`}
               className="text-muted-foreground transition-colors hover:text-destructive"
@@ -481,7 +569,7 @@ export function SkillsEditor({ skills }: { skills: Skill[] }) {
         <button
           disabled={busy || !draft.name}
           onClick={async () => {
-            if (await save(draft)) setDraft({ ...draft, name: "" });
+            if (await save(draft, draft.name)) setDraft({ ...draft, name: "" });
           }}
           className={cn(btn, "col-span-4 bg-foreground text-background")}
         >
@@ -531,7 +619,7 @@ function BookRow({
   book: { slug: string; title: string; author: string; genre?: string };
   override?: BookOverride;
   busy: boolean;
-  onSave: (p: unknown) => Promise<boolean>;
+  onSave: (p: unknown, what?: string) => Promise<boolean>;
 }) {
   const [rating, setRating] = useState<string>(override?.rating?.toString() ?? "");
   const [genre, setGenre] = useState(override?.genre ?? "");
@@ -576,7 +664,7 @@ function BookRow({
             genre: genre || null,
             note: note || null,
             featured: override?.featured ?? false,
-          })
+          }, book.title)
         }
         className={cn(btn, "bg-foreground text-background")}
       >
@@ -606,6 +694,7 @@ function Actions({
       <label className="flex cursor-pointer items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
         <input type="checkbox" checked={published} onChange={onTogglePublished} />
         Published
+        <PublishHint published={published} />
       </label>
       <div className="flex gap-2">
         {onDelete ? (
@@ -627,6 +716,21 @@ function Actions({
       </div>
     </div>
   );
+}
+
+/**
+ * SHA-256 of the file's bytes, truncated to 32 hex characters, used as the
+ * Cloudinary public_id. Identical bytes therefore always land on the same
+ * asset. crypto.subtle needs a secure context, which localhost and the
+ * deployed site both are.
+ */
+async function hashFile(file: File): Promise<string> {
+  const buffer = await file.arrayBuffer();
+  const digest = await crypto.subtle.digest("SHA-256", buffer);
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+    .slice(0, 32);
 }
 
 /** New rows must not send an empty `id` — the column is a uuid with a default,

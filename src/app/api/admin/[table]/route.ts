@@ -1,5 +1,6 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
+import { v2 as cloudinary } from "cloudinary";
 import { z } from "zod";
 
 import { AdminAuthError, requireAdmin } from "@/lib/supabase/auth";
@@ -210,6 +211,77 @@ function authFailure(err: unknown) {
   return null;
 }
 
+/**
+ * Tables whose rows own a Cloudinary asset. Deleting the row has to delete the
+ * asset too — otherwise every removed life entry leaves its photo sitting in
+ * the media account, consuming free-tier storage that nothing can ever reach
+ * again, and the only way to find the orphans is to eyeball the Cloudinary UI.
+ */
+const MEDIA_TABLES: Record<string, { idColumn: string; typeColumn: string }> = {
+  life_entries: { idColumn: "media_id", typeColumn: "media_type" },
+};
+
+type MediaCleanup = { publicId: string; deleted: boolean; reason?: string };
+
+/**
+ * Destroys the asset a just-deleted row owned.
+ *
+ * Public ids are content hashes, so two entries built from the same photo share
+ * one asset. The reference check is what stops deleting one of them from
+ * blanking the other.
+ */
+async function cleanUpMedia(
+  supabase: ReturnType<typeof getServiceClient>,
+  table: string,
+  row: Record<string, unknown> | null
+): Promise<MediaCleanup | null> {
+  const media = MEDIA_TABLES[table];
+  if (!media || !row || !supabase) return null;
+
+  const publicId = row[media.idColumn];
+  if (typeof publicId !== "string" || !publicId) return null;
+
+  const resourceType = row[media.typeColumn] === "video" ? "video" : "image";
+
+  const { count, error: refError } = await supabase
+    .from(table)
+    .select("*", { count: "exact", head: true })
+    .eq(media.idColumn, publicId);
+
+  if (refError) {
+    return { publicId, deleted: false, reason: "could not check for other references" };
+  }
+  if ((count ?? 0) > 0) {
+    return { publicId, deleted: false, reason: "still used by another entry" };
+  }
+
+  if (!process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+    return { publicId, deleted: false, reason: "cloudinary not configured" };
+  }
+
+  try {
+    cloudinary.config({
+      cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+    const res = await cloudinary.uploader.destroy(publicId, {
+      resource_type: resourceType,
+      invalidate: true,
+    });
+    // "not found" means the asset was already gone, which is the desired end
+    // state — only a real failure is worth reporting back.
+    const ok = res.result === "ok" || res.result === "not found";
+    return { publicId, deleted: ok, reason: ok ? undefined : String(res.result) };
+  } catch (err) {
+    return {
+      publicId,
+      deleted: false,
+      reason: err instanceof Error ? err.message : "destroy failed",
+    };
+  }
+}
+
 export async function POST(req: NextRequest, { params }: { params: { table: string } }) {
   try {
     await requireAdmin();
@@ -282,10 +354,18 @@ export async function DELETE(req: NextRequest, { params }: { params: { table: st
     return NextResponse.json({ error: "supabase not configured" }, { status: 503 });
   }
 
+  // Read before deleting: once the row is gone there is no way to learn which
+  // Cloudinary asset it owned.
+  const { data: existing } = MEDIA_TABLES[params.table]
+    ? await supabase.from(params.table).select("*").eq(config.pk, id).maybeSingle()
+    : { data: null };
+
   const { error } = await supabase.from(params.table).delete().eq(config.pk, id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
+  const media = await cleanUpMedia(supabase, params.table, existing);
+
   revalidateTag(CONTENT_TAG);
   config.paths.forEach((p) => revalidatePath(p));
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, media });
 }

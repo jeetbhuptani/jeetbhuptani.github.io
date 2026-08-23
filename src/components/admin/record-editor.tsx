@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { ICON_NAMES } from "@/components/icon-by-name";
+import { DraftBadge, PublishHint } from "@/components/admin/draft-badge";
+import { useToast } from "@/components/admin/toast";
 import { cn } from "@/lib/utils";
 
 /**
@@ -64,6 +66,27 @@ function Field({
 }) {
   const common = { className: inputCls, placeholder: spec.placeholder };
 
+  // A checkbox carries its own inline label, so the block label above it would
+  // just print the same words twice.
+  if (spec.type === "checkbox") {
+    return (
+      <div className="col-span-2">
+        <label className="flex cursor-pointer items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+          <input
+            type="checkbox"
+            checked={Boolean(value)}
+            onChange={(e) => onChange(e.target.checked)}
+          />
+          {spec.label}
+          {spec.key === "published" ? <PublishHint published={Boolean(value)} /> : null}
+        </label>
+        {spec.help ? (
+          <p className="mt-0.5 text-[10px] leading-snug text-muted-foreground/70">{spec.help}</p>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
     <div className={cn(spec.wide || spec.type !== "text" ? "col-span-2" : "")}>
       <label className={labelCls}>{spec.label}</label>
@@ -91,11 +114,6 @@ function Field({
           value={linksToText(value)}
           onChange={(e) => onChange(textToLinks(e.target.value))}
         />
-      ) : spec.type === "checkbox" ? (
-        <label className="mt-1 flex cursor-pointer items-center gap-1.5 text-xs text-muted-foreground">
-          <input type="checkbox" checked={Boolean(value)} onChange={(e) => onChange(e.target.checked)} />
-          {spec.label}
-        </label>
       ) : spec.type === "number" ? (
         <input
           {...common}
@@ -182,13 +200,16 @@ function RecordForm({
             </span>
           ) : null}
         </span>
-        <span
-          className={cn(
-            "shrink-0 font-mono text-[10px] text-muted-foreground transition-transform",
-            open && "rotate-90"
-          )}
-        >
-          ▸
+        <span className="flex shrink-0 items-center gap-2">
+          <DraftBadge published={isNew || form.published !== false} />
+          <span
+            className={cn(
+              "font-mono text-[10px] text-muted-foreground transition-transform",
+              open && "rotate-90"
+            )}
+          >
+            ▸
+          </span>
         </span>
       </button>
 
@@ -253,12 +274,14 @@ export function RecordEditor({
   singleton?: boolean;
 }) {
   const router = useRouter();
+  const toast = useToast();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function save(row: Record<string, any>) {
     setBusy(true);
     setError(null);
+    const what = row[titleKey] || row.name || row.label;
     const res = await fetch(`/api/admin/${table}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -267,9 +290,24 @@ export function RecordEditor({
     setBusy(false);
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
-      setError(body.issues?.[0]?.message ?? body.error ?? `Failed (${res.status})`);
+      const message = body.issues?.[0]?.message ?? body.error ?? `Failed (${res.status})`;
+      setError(message);
+      toast({
+        kind: "error",
+        title: `Couldn’t save${what ? ` “${what}”` : ""}`,
+        detail: `${table}: ${message}`,
+      });
       return;
     }
+    const body = await res.json().catch(() => ({}));
+    const isDraft = body?.row && body.row.published === false;
+    toast({
+      kind: "success",
+      title: isDraft ? `Saved as draft${what ? `: “${what}”` : ""}` : `Saved${what ? `: “${what}”` : ""}`,
+      detail: isDraft
+        ? "Written to the database, but hidden from the site until you tick Published."
+        : `Live on the site now — ${table} refreshed.`,
+    });
     router.refresh();
   }
 
@@ -280,8 +318,13 @@ export function RecordEditor({
       method: "DELETE",
     });
     setBusy(false);
-    if (res.ok) router.refresh();
-    else setError(`Delete failed (${res.status})`);
+    if (res.ok) {
+      toast({ kind: "success", title: "Deleted", detail: `Removed from ${table}.` });
+      router.refresh();
+    } else {
+      setError(`Delete failed (${res.status})`);
+      toast({ kind: "error", title: "Delete failed", detail: `${table}: HTTP ${res.status}` });
+    }
   }
 
   if (singleton) {

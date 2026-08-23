@@ -24,7 +24,10 @@ import {
   TIMELINE_FIELDS,
   BLANKS,
 } from "@/components/admin/field-specs";
+import { HealthBanner, PanelStatus } from "@/components/admin/health-banner";
 import { RecordEditor } from "@/components/admin/record-editor";
+import { ToastProvider } from "@/components/admin/toast";
+import { getContentHealth, type ContentHealth } from "@/lib/content/health";
 import { getBookshelf } from "@/lib/books";
 import {
   bookSlug,
@@ -71,17 +74,26 @@ const TABS = [
 function Panel({
   id,
   title,
+  table,
+  health,
   children,
 }: {
   id: string;
   title: string;
+  /** Postgres table behind this panel, so a broken one can be flagged here as
+   *  well as in the banner — the banner scrolls away, the panel does not. */
+  table?: string;
+  health?: ContentHealth;
   children: React.ReactNode;
 }) {
   return (
     <section id={id} className="scroll-mt-8 space-y-3">
-      <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
-        {title}
-      </h2>
+      <div className="flex items-center gap-2">
+        <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
+          {title}
+        </h2>
+        {table && health ? <PanelStatus table={table} health={health} /> : null}
+      </div>
       {children}
     </section>
   );
@@ -91,16 +103,22 @@ export default async function AdminPage() {
   if (!isSupabaseConfigured()) {
     return (
       <main className="mx-auto flex min-h-[60vh] max-w-sm flex-col justify-center gap-3">
-        <h1 className="font-sans text-2xl font-semibold tracking-tight">Admin</h1>
+        <h1 className="font-sans text-2xl font-semibold tracking-tight">
+          Admin
+        </h1>
         <p className="text-sm leading-relaxed text-muted-foreground">
           Supabase isn&rsquo;t configured yet. Set{" "}
-          <code className="font-mono text-xs">NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
-          <code className="font-mono text-xs">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>, then run
-          the migration in{" "}
+          <code className="font-mono text-xs">NEXT_PUBLIC_SUPABASE_URL</code>{" "}
+          and{" "}
+          <code className="font-mono text-xs">
+            NEXT_PUBLIC_SUPABASE_ANON_KEY
+          </code>
+          , then run the migration in{" "}
           <code className="font-mono text-xs">supabase/migrations/</code>.
         </p>
         <p className="text-xs text-muted-foreground/70">
-          Until then the site serves its committed seed content, so nothing is broken.
+          Until then the site serves its committed seed content, so nothing is
+          broken.
         </p>
       </main>
     );
@@ -114,7 +132,9 @@ export default async function AdminPage() {
   if (state.status === "forbidden") {
     return (
       <main className="mx-auto flex min-h-[60vh] max-w-sm flex-col justify-center gap-3">
-        <h1 className="font-sans text-2xl font-semibold tracking-tight">Not allowed</h1>
+        <h1 className="font-sans text-2xl font-semibold tracking-tight">
+          Not allowed
+        </h1>
         <p className="text-sm text-muted-foreground">
           {state.email} is not the admin account.
         </p>
@@ -127,8 +147,20 @@ export default async function AdminPage() {
   // fresh=true: the editors must show what is actually in the database right
   // now, never a cached copy — otherwise a save appears to have done nothing.
   const [
-    work, life, skills, shelf, overrides,
-    profile, socials, navItems, timeline, projects, hackathons, certificates, posts,
+    work,
+    life,
+    skills,
+    shelf,
+    overrides,
+    profile,
+    socials,
+    navItems,
+    timeline,
+    projects,
+    hackathons,
+    certificates,
+    posts,
+    health,
   ] = await Promise.all([
     getWork(true),
     getLife(true),
@@ -143,6 +175,7 @@ export default async function AdminPage() {
     getHackathons(true),
     getCertificates(true),
     getPostRows(true),
+    getContentHealth(),
   ]);
 
   const books = shelf.books.map((b) => ({
@@ -153,153 +186,202 @@ export default async function AdminPage() {
   }));
 
   return (
-    <main className="flex flex-col gap-8">
-      <header className="flex items-start justify-between gap-4">
-        <div className="space-y-1">
-          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-            Admin · 2FA verified
-          </span>
-          <h1 className="font-sans text-2xl font-semibold tracking-tight">Content</h1>
-          <p className="font-mono text-[10px] text-muted-foreground">{state.email}</p>
-        </div>
-        <div className="flex flex-col items-end gap-1.5">
-          <SignOutButton />
-          <Link
-            href="/"
-            className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground transition-colors hover:text-foreground"
-          >
-            View site
-          </Link>
-        </div>
-      </header>
+    <ToastProvider>
+      <main className="flex flex-col gap-8">
+        <HealthBanner health={health} />
+        <header className="flex items-start justify-between gap-4">
+          <div className="space-y-1">
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+              Admin · 2FA verified
+            </span>
+            <h1 className="font-sans text-2xl font-semibold tracking-tight">
+              Content
+            </h1>
+            <p className="font-mono text-[10px] text-muted-foreground">
+              {state.email}
+            </p>
+          </div>
+          <div className="flex flex-col items-end gap-1.5">
+            <SignOutButton />
+            <Link
+              href="/"
+              className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground transition-colors hover:text-foreground"
+            >
+              View site
+            </Link>
+          </div>
+        </header>
 
-      {/* Anchor nav rather than JS tabs — the editors are all server-rendered
+        {/* Anchor nav rather than JS tabs — the editors are all server-rendered
           and the page is short enough that scrolling beats state. */}
-      <nav className="flex flex-wrap gap-1.5">
-        {TABS.map((t) => (
-          <a
-            key={t.id}
-            href={`#${t.id}`}
-            className="rounded-lg border border-border bg-card px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-foreground"
-          >
-            {t.label}
-          </a>
-        ))}
-      </nav>
+        <nav className="flex flex-wrap gap-1.5">
+          {TABS.map((t) => (
+            <a
+              key={t.id}
+              href={`#${t.id}`}
+              className="rounded-lg border border-border bg-card px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {t.label}
+            </a>
+          ))}
+        </nav>
 
-      <Panel id="profile" title="Profile — name, bio, contact">
-        <RecordEditor
+        <Panel
+          id="profile"
+          title="Profile — name, bio, contact"
           table="profile"
-          fields={PROFILE_FIELDS}
-          rows={[profile]}
-          blank={BLANKS.profile}
-          singleton
-        />
-      </Panel>
+          health={health}
+        >
+          <RecordEditor
+            table="profile"
+            fields={PROFILE_FIELDS}
+            rows={[profile]}
+            blank={BLANKS.profile}
+            singleton
+          />
+        </Panel>
 
-      <Panel id="timeline" title="Timeline — work, volunteering, education">
-        <RecordEditor
+        <Panel
+          id="timeline"
+          title="Timeline — work, volunteering, education"
           table="timeline_entries"
-          fields={TIMELINE_FIELDS}
-          rows={timeline}
-          blank={BLANKS.timeline_entries}
-          titleKey="org"
-          subtitleKey="role"
-        />
-      </Panel>
+          health={health}
+        >
+          <RecordEditor
+            table="timeline_entries"
+            fields={TIMELINE_FIELDS}
+            rows={timeline}
+            blank={BLANKS.timeline_entries}
+            titleKey="org"
+            subtitleKey="role"
+          />
+        </Panel>
 
-      <section id="work" className="scroll-mt-8 space-y-3">
-        <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
-          Work timeline
-        </h2>
-        <WorkEditor entries={work} />
-      </section>
+        <section id="work" className="scroll-mt-8 space-y-3">
+          <div className="flex items-center gap-2">
+            <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
+              Work timeline
+            </h2>
+            <PanelStatus table="work_entries" health={health} />
+          </div>
+          <WorkEditor entries={work} />
+        </section>
 
-      <section id="life" className="scroll-mt-8 space-y-3">
-        <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
-          Life — family & friends
-        </h2>
-        <LifeEditor entries={life} />
-      </section>
+        <section id="life" className="scroll-mt-8 space-y-3">
+          <div className="flex items-center gap-2">
+            <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
+              Life — family & friends
+            </h2>
+            <PanelStatus table="life_entries" health={health} />
+          </div>
+          <LifeEditor entries={life} />
+        </section>
 
-      <section id="skills" className="scroll-mt-8 space-y-3">
-        <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
-          Skills
-        </h2>
-        <SkillsEditor skills={skills} />
-      </section>
+        <section id="skills" className="scroll-mt-8 space-y-3">
+          <div className="flex items-center gap-2">
+            <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
+              Skills
+            </h2>
+            <PanelStatus table="skills" health={health} />
+          </div>
+          <SkillsEditor skills={skills} />
+        </section>
 
-      <section id="books" className="scroll-mt-8 space-y-3">
-        <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
-          Book ratings & genres
-        </h2>
-        <BooksEditor
-          books={books}
-          overrides={Object.fromEntries(overrides)}
-        />
-      </section>
+        <section id="books" className="scroll-mt-8 space-y-3">
+          <div className="flex items-center gap-2">
+            <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
+              Book ratings & genres
+            </h2>
+            <PanelStatus table="book_overrides" health={health} />
+          </div>
+          <BooksEditor
+            books={books}
+            overrides={Object.fromEntries(overrides)}
+          />
+        </section>
 
-      <Panel id="projects" title="Projects & Ignosis showcase">
-        <RecordEditor
+        <Panel
+          id="projects"
+          title="Projects & Ignosis showcase"
           table="projects"
-          fields={PROJECT_FIELDS}
-          rows={projects}
-          blank={BLANKS.projects}
-          subtitleKey="kind"
-        />
-      </Panel>
+          health={health}
+        >
+          <RecordEditor
+            table="projects"
+            fields={PROJECT_FIELDS}
+            rows={projects}
+            blank={BLANKS.projects}
+            subtitleKey="kind"
+          />
+        </Panel>
 
-      <Panel id="posts" title="Blog posts">
-        <RecordEditor
-          table="posts"
-          fields={POST_FIELDS}
-          rows={posts}
-          blank={BLANKS.posts}
-          subtitleKey="slug"
-        />
-      </Panel>
+        <Panel id="posts" title="Blog posts" table="posts" health={health}>
+          <RecordEditor
+            table="posts"
+            fields={POST_FIELDS}
+            rows={posts}
+            blank={BLANKS.posts}
+            subtitleKey="slug"
+          />
+        </Panel>
 
-      <Panel id="hackathons" title="Hackathons">
-        <RecordEditor
+        <Panel
+          id="hackathons"
+          title="Hackathons"
           table="hackathons"
-          fields={HACKATHON_FIELDS}
-          rows={hackathons}
-          blank={BLANKS.hackathons}
-          subtitleKey="dates"
-        />
-      </Panel>
+          health={health}
+        >
+          <RecordEditor
+            table="hackathons"
+            fields={HACKATHON_FIELDS}
+            rows={hackathons}
+            blank={BLANKS.hackathons}
+            subtitleKey="dates"
+          />
+        </Panel>
 
-      <Panel id="certificates" title="Certificates">
-        <RecordEditor
+        <Panel
+          id="certificates"
+          title="Certificates"
           table="certificates"
-          fields={CERTIFICATE_FIELDS}
-          rows={certificates}
-          blank={BLANKS.certificates}
-          subtitleKey="issuer"
-        />
-      </Panel>
+          health={health}
+        >
+          <RecordEditor
+            table="certificates"
+            fields={CERTIFICATE_FIELDS}
+            rows={certificates}
+            blank={BLANKS.certificates}
+            subtitleKey="issuer"
+          />
+        </Panel>
 
-      <Panel id="socials" title="Social links">
-        <RecordEditor
+        <Panel
+          id="socials"
+          title="Social links"
           table="social_links"
-          fields={SOCIAL_FIELDS}
-          rows={socials}
-          blank={BLANKS.social_links}
-          titleKey="name"
-          subtitleKey="url"
-        />
-      </Panel>
+          health={health}
+        >
+          <RecordEditor
+            table="social_links"
+            fields={SOCIAL_FIELDS}
+            rows={socials}
+            blank={BLANKS.social_links}
+            titleKey="name"
+            subtitleKey="url"
+          />
+        </Panel>
 
-      <Panel id="nav" title="Navbar items">
-        <RecordEditor
-          table="nav_items"
-          fields={NAV_FIELDS}
-          rows={navItems}
-          blank={BLANKS.nav_items}
-          titleKey="label"
-          subtitleKey="href"
-        />
-      </Panel>
-    </main>
+        <Panel id="nav" title="Navbar items" table="nav_items" health={health}>
+          <RecordEditor
+            table="nav_items"
+            fields={NAV_FIELDS}
+            rows={navItems}
+            blank={BLANKS.nav_items}
+            titleKey="label"
+            subtitleKey="href"
+          />
+        </Panel>
+      </main>
+    </ToastProvider>
   );
 }
