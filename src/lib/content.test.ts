@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { bookSlug, groupOrdered } from "@/lib/content";
+import { SEED_IMPACT, SEED_WORK, TRACK_ORDER } from "@/lib/content/seed";
 
 describe("bookSlug", () => {
   it("is stable across punctuation and case", () => {
@@ -45,5 +46,35 @@ describe("groupOrdered", () => {
     const out = groupOrdered(rows, (r) => r.k, ["Backend"]);
     expect(out[0].items).toHaveLength(2);
     expect(out.reduce((n, g) => n + g.items.length, 0)).toBe(rows.length);
+  });
+});
+
+describe("work seed content", () => {
+  it("puts every entry on a known track", () => {
+    // A typo in `track` doesn't fail anything — groupOrdered just files the
+    // entry at the end under its own heading, which reads as a rendering bug.
+    for (const entry of SEED_WORK) {
+      expect(TRACK_ORDER, `${entry.title} is on an unlisted track`).toContain(entry.track);
+    }
+  });
+
+  it("leads with the two highest-scale threads", () => {
+    const ordered = [...SEED_WORK].sort((a, b) => a.sort_order - b.sort_order);
+    expect(ordered.slice(0, 2).map((e) => e.track)).toEqual(["Integrations", "AI"]);
+  });
+
+  it("states an outcome, not just an activity, in every summary", () => {
+    for (const entry of SEED_WORK) {
+      expect(entry.summary.length, `${entry.title} has no summary`).toBeGreaterThan(40);
+      expect(entry.highlights.length, `${entry.title} has no highlights`).toBeGreaterThan(0);
+    }
+  });
+
+  it("carries the headline business numbers", () => {
+    expect(SEED_IMPACT).toHaveLength(3);
+    for (const stat of SEED_IMPACT) {
+      expect(stat.value).toBeTruthy();
+      expect(stat.label).toBeTruthy();
+    }
   });
 });

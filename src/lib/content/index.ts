@@ -2,6 +2,7 @@ import { getPublicClient } from "@/lib/supabase/server";
 
 import {
   SEED_BOOK_OVERRIDES,
+  SEED_IMPACT,
   SEED_LIFE,
   SEED_SKILLS,
   SEED_WORK,
@@ -151,7 +152,7 @@ export function groupOrdered<T>(
     });
 }
 
-export { REVALIDATE_SECONDS, SKILL_CATEGORY_ORDER, TRACK_ORDER };
+export { REVALIDATE_SECONDS, SEED_IMPACT, SKILL_CATEGORY_ORDER, TRACK_ORDER };
 export type {
   BookOverride,
   Certificate,

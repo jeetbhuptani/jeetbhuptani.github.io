@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/motion/reveal";
-import { TRACK_ORDER, byKind, getTimeline, getWork, groupOrdered } from "@/lib/content";
+import { SEED_IMPACT, TRACK_ORDER, byKind, getTimeline, getWork, groupOrdered } from "@/lib/content";
 import type { WorkEntry } from "@/lib/content/types";
 
 
@@ -128,25 +128,33 @@ export default async function WorkPage() {
             . This is what the work adds up to, grouped by the kind of problem rather
             than by quarter.
           </p>
-          <p className="max-w-lg text-xs leading-relaxed text-muted-foreground/70">
-            Capability and scale only — no client names, no ticket references, no internal
-            systems.
-          </p>
-
-          <dl className="flex flex-wrap gap-x-6 gap-y-2 pt-2 font-mono text-[11px] text-muted-foreground">
-            <div className="flex items-baseline gap-1.5">
-              <dt className="tabular-nums text-foreground">{entries.length}</dt>
-              <dd>threads of work</dd>
-            </div>
-            <div className="flex items-baseline gap-1.5">
-              <dt className="tabular-nums text-foreground">{tracks.length}</dt>
-              <dd>tracks</dd>
-            </div>
-            <div className="flex items-baseline gap-1.5">
-              <dt className="tabular-nums text-foreground">{totalMetrics}</dt>
-              <dd>measured outcomes</dd>
-            </div>
+          {/* Business outcome first, engineering detail second. The old header
+              counted its own threads and tracks, which measures the page rather
+              than the work. */}
+          <dl className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-3">
+            {SEED_IMPACT.map((stat) => (
+              <div key={stat.label} className="flex flex-col gap-1 bg-card p-4">
+                <dt className="font-sans text-2xl font-semibold tracking-tight tabular-nums">
+                  {stat.value}
+                </dt>
+                <dd className="text-xs leading-snug text-muted-foreground">{stat.label}</dd>
+              </div>
+            ))}
           </dl>
+
+          <p className="flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground/70">
+            <span>
+              <span className="tabular-nums text-muted-foreground">{entries.length}</span>{" "}
+              threads
+            </span>
+            <span>
+              <span className="tabular-nums text-muted-foreground">{tracks.length}</span> tracks
+            </span>
+            <span>
+              <span className="tabular-nums text-muted-foreground">{totalMetrics}</span> measured
+              outcomes
+            </span>
+          </p>
         </header>
       </Reveal>
 

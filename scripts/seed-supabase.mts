@@ -1,8 +1,9 @@
 /**
  * One-shot seeder: pushes the committed seed content into Supabase.
  *
- *   pnpm seed          # only writes to tables that are empty
- *   pnpm seed --force  # overwrite: deletes existing rows first
+ *   pnpm seed                                    # only writes to empty tables
+ *   pnpm seed --force                            # overwrite: deletes rows first
+ *   pnpm seed --force --only=work_entries        # ...just one table
  *
  * Why this exists: without it the first visit to /admin shows empty editors,
  * and the seven work entries and thirty-five skills would have to be retyped by
@@ -23,6 +24,18 @@ import { createClient } from "@supabase/supabase-js";
 import { SEED_LIFE, SEED_SKILLS, SEED_WORK } from "../src/lib/content/seed.ts";
 
 const force = process.argv.includes("--force");
+
+/**
+ * Restrict the run to named tables.
+ *
+ * Rewriting the work entries should not also blow away skills that were edited
+ * from /admin, and without this `--force` is all-or-nothing across every table
+ * the script knows about.
+ */
+const onlyArg = process.argv.find((a) => a.startsWith("--only="));
+const only = onlyArg
+  ? new Set(onlyArg.slice("--only=".length).split(",").map((t) => t.trim()).filter(Boolean))
+  : null;
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const key = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -56,6 +69,10 @@ function withoutId<T extends { id: string }>(rows: T[]): Omit<T, "id">[] {
 }
 
 async function seed(table: string, rows: Record<string, unknown>[]) {
+  if (only && !only.has(table)) {
+    console.log(`  ${table.padEnd(14)} — not in --only, skipped`);
+    return;
+  }
   if (!rows.length) {
     console.log(`  ${table.padEnd(14)} — nothing to seed, skipped`);
     return;
@@ -99,7 +116,10 @@ async function seed(table: string, rows: Record<string, unknown>[]) {
   console.log(`  ${table.padEnd(14)} ✓ inserted ${inserted ?? rows.length} rows`);
 }
 
-console.log(`Seeding ${origin}${force ? " (--force: replacing existing rows)" : ""}\n`);
+console.log(
+  `Seeding ${origin}${force ? " (--force: replacing existing rows)" : ""}` +
+    `${only ? ` (--only: ${[...only].join(", ")})` : ""}\n`
+);
 
 await seed("work_entries", withoutId(SEED_WORK));
 await seed("skills", withoutId(SEED_SKILLS));
