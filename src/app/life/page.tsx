@@ -8,7 +8,7 @@ import type { LifeEntry } from "@/lib/content/types";
 
 export const metadata: Metadata = {
   title: "Life",
-  description: "The people around the work — family, friends, and the moments in between.",
+  description: "Family, friends, the places I keep going back to, and the moments worth keeping.",
 };
 
 export const revalidate = 3600;
@@ -76,12 +76,12 @@ export default async function LifePage() {
             Life
           </span>
           <h1 className="text-glow font-sans text-3xl font-semibold tracking-tight sm:text-5xl">
-            The people around the{" "}
-            <span className="font-serif font-normal italic">work</span>
+            The people and places I{" "}
+            <span className="font-serif font-normal italic">keep</span>
           </h1>
           <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
-            Family, friends, places, and the small moments that don&rsquo;t fit anywhere else
-            on a portfolio.
+            Family, friends, the places I keep going back to, and the moments worth
+            keeping. This is the part of life the rest of the site leaves out.
           </p>
         </header>
       </Reveal>
