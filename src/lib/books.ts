@@ -19,7 +19,16 @@ export type BooksResult = {
   books: Book[];
 };
 
-export type ShelfBook = Book & { status: "reading" | "read" };
+export type ShelfBook = Book & {
+  status: "reading" | "read" | "dnf";
+  /** Primary genre, picked as the highest-`count` Hardcover genre tag. */
+  genre?: string;
+  /** Jeet's own 1-5 rating. Hardcover returns null unless he has rated the
+   *  book there, so this is frequently absent and must render conditionally. */
+  rating?: number;
+  year?: number;
+  pages?: number;
+};
 export type ShelfResult = { status: "ok" | "empty" | "error"; books: ShelfBook[] };
 
 const HARDCOVER_ENDPOINT = "https://api.hardcover.app/v1/graphql";
@@ -59,15 +68,51 @@ const SHELF_QUERY = `query Shelf {
   me {
     user_books(where: { status_id: { _in: [2, 3, 5] } }) {
       status_id
+      rating
       book {
         title
         contributions { author { name } }
         image { url }
         cached_image
+        cached_tags
+        release_year
+        pages
       }
     }
   }
 }`;
+
+/**
+ * Genre tags Hardcover applies so broadly that they say nothing about a book.
+ * "Fiction" on a novel is not a shelf worth having; the next tag down is.
+ */
+const UNINFORMATIVE_GENRES = new Set([
+  "fiction",
+  "nonfiction",
+  "non-fiction",
+  "general",
+  "books",
+  "adult",
+  "spanish",
+]);
+
+/**
+ * Pick one display genre from Hardcover's `cached_tags.Genre` array.
+ *
+ * Tags come back ordered arbitrarily with a crowd-sourced `count`, so we take
+ * the highest count and fall back down the list when the winner is a
+ * catch-all. Returns undefined rather than "Unknown" so callers can decide how
+ * an ungenred book is shelved.
+ */
+export function pickGenre(cachedTags: any): string | undefined {
+  const genres: any[] = cachedTags?.Genre ?? [];
+  const ranked = [...genres]
+    .filter((g) => typeof g?.tag === "string")
+    .sort((a, b) => (b.count ?? 0) - (a.count ?? 0));
+
+  const specific = ranked.find((g) => !UNINFORMATIVE_GENRES.has(g.tag.toLowerCase()));
+  return (specific ?? ranked[0])?.tag;
+}
 
 export function normalizeShelf(data: any): ShelfBook[] {
   const userBooks = data?.me?.[0]?.user_books ?? [];
@@ -75,12 +120,20 @@ export function normalizeShelf(data: any): ShelfBook[] {
     .map((ub: any): ShelfBook | null => {
       const book = ub?.book;
       if (!book?.title) return null;
+      // status_id: 2 = reading, 3 = read, 5 = did-not-finish
+      const status = ub.status_id === 2 ? "reading" : ub.status_id === 5 ? "dnf" : "read";
       return {
         title: book.title,
         author: book.contributions?.[0]?.author?.name ?? "Unknown",
         cover: book.image?.url ?? book.cached_image?.url,
         accent: book.cached_image?.color,
-        status: ub.status_id === 2 ? "reading" : "read",
+        status,
+        genre: pickGenre(book.cached_tags),
+        // Hardcover returns null until the book is rated there; keep it absent
+        // rather than 0 so "no rating" and "rated zero" stay distinguishable.
+        rating: typeof ub.rating === "number" ? ub.rating : undefined,
+        year: typeof book.release_year === "number" ? book.release_year : undefined,
+        pages: typeof book.pages === "number" ? book.pages : undefined,
       };
     })
     .filter(Boolean) as ShelfBook[];
@@ -104,8 +157,9 @@ export async function getBookshelf(): Promise<ShelfResult> {
     const json = await res.json();
     if (json.errors) throw new Error("Hardcover GraphQL error");
     const books = normalizeShelf(json.data);
-    // currently-reading first, then read
-    books.sort((a, b) => (a.status === b.status ? 0 : a.status === "reading" ? -1 : 1));
+    // currently-reading first, then finished, then did-not-finish
+    const rank = { reading: 0, read: 1, dnf: 2 } as const;
+    books.sort((a, b) => rank[a.status] - rank[b.status] || a.title.localeCompare(b.title));
     return books.length ? { status: "ok", books } : { status: "empty", books: [] };
   } catch {
     return { status: "error", books: [] };
@@ -180,4 +234,49 @@ export async function getCurrentlyReading(): Promise<BooksResult> {
   } catch {
     return { status: "error", source: "none", books: [] };
   }
+}
+
+/**
+ * Splits a shelf into "reading now" plus genre shelves.
+ *
+ * Currently-reading books are pinned to the top — they are the only part of the
+ * page that changes week to week, and burying them inside whichever genre they
+ * happen to belong to made them the hardest thing to find. They are then held
+ * out of the genre shelves, because the same cover appearing twice on one page
+ * reads as a bug.
+ *
+ * Genres thinner than `minShelfSize` are pooled into one shelf so the page does
+ * not turn into a row of one-book shelves.
+ */
+export function buildShelves<T extends { title: string; status: string; genre?: string }>(
+  books: T[],
+  {
+    slugOf,
+    minShelfSize = 2,
+    miscLabel = "Everything else",
+  }: { slugOf: (title: string) => string; minShelfSize?: number; miscLabel?: string }
+): { reading: T[]; shelves: { key: string; items: T[] }[] } {
+  const reading = books.filter((b) => b.status === "reading");
+  const readingSlugs = new Set(reading.map((b) => slugOf(b.title)));
+  const shelved = books.filter((b) => !readingSlugs.has(slugOf(b.title)));
+
+  const byGenre = new Map<string, T[]>();
+  for (const book of shelved) {
+    const key = book.genre ?? miscLabel;
+    const bucket = byGenre.get(key);
+    if (bucket) bucket.push(book);
+    else byGenre.set(key, [book]);
+  }
+
+  const groups = Array.from(byGenre, ([key, items]) => ({ key, items }));
+  const thick = groups.filter((g) => g.items.length >= minShelfSize && g.key !== miscLabel);
+  const thin = groups.filter((g) => g.items.length < minShelfSize || g.key === miscLabel);
+
+  return {
+    reading,
+    shelves: [
+      ...thick.sort((a, b) => b.items.length - a.items.length),
+      ...(thin.length ? [{ key: miscLabel, items: thin.flatMap((g) => g.items) }] : []),
+    ],
+  };
 }

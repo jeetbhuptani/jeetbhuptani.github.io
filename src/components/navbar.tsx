@@ -9,24 +9,24 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { DATA } from "@/data/resume";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState, useMemo } from "react";
-import { Icons } from "./icons";
+import { ContentIcon } from "@/components/icon-by-name";
 
 interface NavItemProps {
   href: string;
-  icon: React.ComponentType<{ className?: string }>;
+  /** Icon *name* from the database, resolved by ContentIcon. */
+  icon: string;
   label: string;
   onClick?: () => void;
   className?: string;
   tooltipSide?: "top" | "bottom" | "left" | "right";
 }
 
-const NavItem = ({ href, icon: Icon, label, onClick, className, tooltipSide = "top" }: NavItemProps) => (
+const NavItem = ({ href, icon, label, onClick, className, tooltipSide = "top" }: NavItemProps) => (
   <Tooltip>
     <TooltipTrigger asChild>
       <Link
@@ -37,7 +37,7 @@ const NavItem = ({ href, icon: Icon, label, onClick, className, tooltipSide = "t
           className
         )}
       >
-        <Icon className="size-4" />
+        <ContentIcon name={icon} className="size-4" />
       </Link>
     </TooltipTrigger>
     <TooltipContent side={tooltipSide}>
@@ -61,7 +61,7 @@ const ThemeToggle = ({ tooltipSide = "top" }: { tooltipSide?: "top" | "bottom" |
 
 // Generic render function to eliminate repetition
 const renderItems = (
-  items: ReadonlyArray<{ readonly href: string; readonly icon: any; readonly label: string }>,
+  items: ReadonlyArray<{ readonly href: string; readonly icon: string; readonly label: string }>,
   size: string,
   tooltipSide?: "top" | "bottom" | "left" | "right",
   onClick?: () => void,
@@ -97,30 +97,31 @@ const renderItems = (
   return itemsJSX;
 };
 
-export default function Navbar() {
+type NavLink = { href: string; icon: string; label: string };
+
+/**
+ * Navbar is a client component (it owns the mobile-menu open state), so it
+ * cannot read the database itself. The root layout fetches nav items and
+ * socials on the server and passes them down as plain strings.
+ */
+export default function Navbar({
+  navItems = [],
+  socialNavItems = [],
+}: {
+  navItems?: NavLink[];
+  socialNavItems?: NavLink[];
+}) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  // Memoize navigation items to prevent recreation on each render
-  const navItems = useMemo(() => DATA.navbar || [], []);
-  
-  const additionalNavItems = useMemo(() => [
-    { href: "/#projects", icon: Icons.projects, label: "Projects" },
-    { href: "/#hackathons", icon: Icons.trophy, label: "Hackathons" },
+  // In-page anchors, not content — they belong to the layout, not the database.
+  const additionalNavItems = useMemo<NavLink[]>(() => [
+    { href: "/#products", icon: "projects", label: "Products" },
+    { href: "/#hackathons", icon: "trophy", label: "Hackathons" },
   ], []);
-
-  const socialNavItems = useMemo(() => 
-    Object.entries(DATA.contact.social)
-      .filter(([_, social]) => social.navbar)
-      .map(([name, social]) => ({
-        href: social.url,
-        icon: social.icon,
-        label: name,
-      })), []
-  );
 
   // Create a combined array for mobile menu to eliminate repetition
   const allMobileMenuItems = useMemo(() => [

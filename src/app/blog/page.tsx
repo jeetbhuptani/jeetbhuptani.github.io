@@ -1,4 +1,4 @@
-import { getBlogPosts } from "@/data/blog";
+import { getPosts } from "@/lib/content/posts";
 import { Reveal } from "@/components/motion/reveal";
 import { readingTime } from "@/lib/blog-utils";
 import { formatDate } from "@/lib/utils";
@@ -10,10 +10,9 @@ export const metadata = {
 };
 
 export default async function BlogPage() {
-  const posts = (await getBlogPosts()).sort(
-    (a, b) =>
-      new Date(b.metadata.publishedAt).getTime() - new Date(a.metadata.publishedAt).getTime()
-  );
+  // getPosts() already returns newest-first, from the database when it has
+  // posts and from the committed .mdx files otherwise.
+  const posts = await getPosts();
 
   return (
     <main className="flex flex-col gap-8">

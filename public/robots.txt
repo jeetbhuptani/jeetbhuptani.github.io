@@ -1,3 +1,11 @@
+# *
 User-agent: *
 Allow: /
-Sitemap: https://jeetbhuptani.me/sitemap.xml
+Disallow: /api/
+Disallow: /admin
+
+# Host
+Host: https://jeetbhuptani.tech
+
+# Sitemaps
+Sitemap: https://jeetbhuptani.tech/sitemap.xml

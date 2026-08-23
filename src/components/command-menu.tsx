@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "next-themes";
-import { DATA } from "@/data/resume";
 
 type Item = {
   id: string;
@@ -25,7 +24,13 @@ function scrollToId(id: string) {
  * normal nav — links and scrolling still work without it. ⌘K / Ctrl-K / "/"
  * opens the palette; single letters jump to sections when not typing in a field.
  */
-export function CommandMenu() {
+export function CommandMenu({
+  socials = [],
+}: {
+  /** Passed from the server layout — this is a client component and cannot
+   *  read the database itself. */
+  socials?: { label: string; href: string }[];
+}) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
@@ -37,20 +42,21 @@ export function CommandMenu() {
       { id: "top", label: "Top", hint: "h", group: "Navigate", run: () => scrollToId("top") },
       { id: "about", label: "About", hint: "a", group: "Navigate", run: () => scrollToId("about") },
       { id: "work", label: "Work", hint: "w", group: "Navigate", run: () => scrollToId("work") },
-      { id: "bookshelf", label: "Bookshelf", hint: "r", group: "Navigate", run: () => scrollToId("bookshelf") },
-      { id: "projects", label: "Projects", hint: "p", group: "Navigate", run: () => scrollToId("projects") },
-      { id: "life", label: "Life", hint: "l", group: "Navigate", run: () => scrollToId("life") },
+      { id: "products", label: "Products", hint: "p", group: "Navigate", run: () => scrollToId("products") },
+      // Bookshelf and Life are only a tab on the home page now; the full
+      // versions are real routes, so jump there rather than to the teaser.
+      { id: "bookshelf", label: "Bookshelf", hint: "r", group: "Navigate", run: () => (window.location.href = "/bookshelf") },
+      { id: "life", label: "Life", hint: "l", group: "Navigate", run: () => (window.location.href = "/life") },
+      { id: "hackathons", label: "Hackathons", hint: "k", group: "Navigate", run: () => scrollToId("hackathons") },
       { id: "contact", label: "Contact", hint: "c", group: "Navigate", run: () => scrollToId("contact") },
       { id: "blog", label: "Blog", hint: "b", group: "Navigate", run: () => (window.location.href = "/blog") },
     ];
-    const links: Item[] = Object.entries(DATA.contact.social)
-      .filter(([, s]) => "navbar" in s && s.navbar)
-      .map(([name, s]) => ({
-        id: `link-${name}`,
-        label: name,
-        group: "Links" as const,
-        run: () => window.open(s.url, "_blank"),
-      }));
+    const links: Item[] = socials.map((s) => ({
+      id: `link-${s.label}`,
+      label: s.label,
+      group: "Links" as const,
+      run: () => window.open(s.href, "_blank"),
+    }));
     const actions: Item[] = [
       {
         id: "theme",
@@ -61,7 +67,9 @@ export function CommandMenu() {
       },
     ];
     return [...nav, ...links, ...actions];
-  }, [resolvedTheme, setTheme]);
+    // `socials` belongs here: the memo closes over it, so omitting it would
+    // pin the Links group to whatever the first render happened to receive.
+  }, [resolvedTheme, setTheme, socials]);
 
   const hotkeys = useMemo(() => {
     const map: Record<string, Item> = {};

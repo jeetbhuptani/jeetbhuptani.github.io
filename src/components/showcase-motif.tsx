@@ -8,7 +8,10 @@ import { motion, useReducedMotion } from "framer-motion";
  * call rings + waveform; "collections" = multi-channel lines with traveling
  * payloads. Both fall back to a static frame under reduced motion.
  */
-export function ShowcaseMotif({ variant }: { variant: "collections" | "voice" }) {
+/** `variant` is free text from the database, so anything that is not a known
+ *  motif falls through to the "collections" artwork rather than rendering
+ *  nothing — a typo in the admin should not blank a card. */
+export function ShowcaseMotif({ variant }: { variant: string }) {
   const reduce = useReducedMotion();
   return (
     <div className="relative aspect-video w-full overflow-hidden border-b border-border bg-gradient-to-br from-secondary/50 to-card">

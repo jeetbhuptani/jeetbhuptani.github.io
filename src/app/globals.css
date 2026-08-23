@@ -33,9 +33,12 @@
       --input: 30 14% 86%;
       --ring: 24 10% 35%;
 
-      /* Monochrome — "brand" is just ink so accents read as contrast, not color */
+      /* Brand stays ink so structure reads as contrast, not colour... */
       --brand: 24 14% 12%;
       --brand-foreground: 40 33% 98%;
+      /* ...and one warm amber accent carries state: links, focus, live dots.
+         A single hue is what keeps this from looking like a template. */
+      --accent-hue: 28 82% 46%;
 
       --radius: 0.65rem;
     }
@@ -72,6 +75,8 @@
 
       --brand: 36 20% 92%;
       --brand-foreground: 24 12% 6%;
+      --accent-hue: 32 92% 60%;
+
     }
   }
 
@@ -102,6 +107,81 @@
       .has-custom-cursor * {
         cursor: none;
       }
+    }
+  }
+
+  /* ------------------------------------------------------------------ ambience
+     The background is flat, as it was originally — warm cream in light, warm
+     near-black in dark. A tinted radial wash was tried here and pulled the
+     page away from the ink-on-paper feel the rest of the design is built on.
+     The only thing left is a monochrome grain, which adds texture without
+     introducing a second hue. Delete the <div className="grain" /> in
+     layout.tsx for a completely flat background. */
+
+  /* Film grain. An inline SVG turbulence tile — ~250 bytes, no request, and it
+     sits on its own layer so it never repaints with content. It is what stops
+     the large flat areas reading as "unstyled". */
+  .grain {
+    position: fixed;
+    inset: 0;
+    z-index: -10;
+    pointer-events: none;
+    opacity: 0.018;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .dark .grain {
+    opacity: 0.03;
+  }
+
+  /* ------------------------------------------------------------------- accents
+     One hue, used only where something is live or interactive. */
+  .accent-dot {
+    background-color: hsl(var(--accent-hue));
+    box-shadow: 0 0 0 3px hsl(var(--accent-hue) / 0.16);
+  }
+
+  /* Underline that draws in from the left on hover. background-size only, so
+     it animates on the compositor instead of relaying out a border. */
+  .link-underline {
+    background-image: linear-gradient(hsl(var(--accent-hue)), hsl(var(--accent-hue)));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 1px;
+    transition: background-size 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .link-underline:hover {
+    background-size: 100% 1px;
+  }
+
+  /* Card lift. transform + border-colour only — never box-shadow on hover,
+     which forces a repaint of everything beneath it. */
+  .card-lift {
+    transition:
+      transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 220ms ease;
+    will-change: transform;
+  }
+  .card-lift:hover {
+    transform: translateY(-2px);
+    border-color: hsl(var(--foreground) / 0.22);
+  }
+
+  /* Hairline top edge that catches the "light" — one gradient, no element. */
+  .edge-light {
+    background-image: linear-gradient(
+      to bottom,
+      hsl(var(--foreground) / 0.06),
+      transparent 40%
+    );
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-lift,
+    .link-underline {
+      transition: none;
+    }
+    .card-lift:hover {
+      transform: none;
     }
   }
 

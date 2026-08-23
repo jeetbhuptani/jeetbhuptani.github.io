@@ -7,7 +7,7 @@ import { CommandMenu } from "@/components/command-menu";
 import { HelloIntro } from "@/components/hello-intro";
 import { SectionIndex } from "@/components/section-index";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { DATA } from "@/data/resume";
+import { getNavItems, getProfile, getSocials } from "@/lib/content";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Instrument_Serif } from "next/font/google";
@@ -22,20 +22,20 @@ const fontSerif = Instrument_Serif({
   variable: "--font-serif",
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(DATA.url),
+export async function generateMetadata(): Promise<Metadata> {
+  const profile = await getProfile();
+  return {
+  metadataBase: new URL(profile.url || "https://jeetbhuptani.tech"),
   title: {
-    default: DATA.name,
-    template: `%s | ${DATA.name}`,
+    default: profile.name,
+    template: `%s | ${profile.name}`,
   },
-  description:
-    "Computer Engineer who is all about building real-world software products and experimenting with modern technologies.",
+  description: profile.description,
   openGraph: {
-    title: `${DATA.name}`,
-    description:
-      "Computer Engineer who is all about building real-world software products and experimenting with modern technologies.",
-    url: DATA.url,
-    siteName: `${DATA.name}`,
+    title: profile.name,
+    description: profile.description,
+    url: profile.url,
+    siteName: profile.name,
     locale: "en_US",
     type: "website",
   },
@@ -51,20 +51,29 @@ export const metadata: Metadata = {
     },
   },
   twitter: {
-    title: `${DATA.name}`,
+    title: profile.name,
     card: "summary_large_image",
   },
   verification: {
     google: "",
     yandex: "",
   },
-};
+  };
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [profile, navItems, socials] = await Promise.all([
+    getProfile(),
+    getNavItems(),
+    getSocials(),
+  ]);
+  const socialNavItems = socials
+    .filter((s) => s.navbar)
+    .map((s) => ({ href: s.url, icon: s.icon, label: s.name }));
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -76,17 +85,12 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Person",
-              name: DATA.name,
-              url: DATA.url,
-              sameAs: [
-                DATA.contact.social.GitHub.url,
-                DATA.contact.social.LinkedIn.url,
-                DATA.contact.social.X.url,
-              ],
+              name: profile.name,
+              url: profile.url,
+              sameAs: socials.map((s) => s.url),
               jobTitle: "Software Engineer",
               worksFor: { "@type": "Organization", name: "Ignosis" },
-              description:
-                "Jeet Bhuptani is a Computer Engineer passionate about building real-world software products and experimenting with new technologies.",
+              description: profile.description,
             }),
           }}
         />
@@ -100,6 +104,11 @@ export default function RootLayout({
           fontSerif.variable
         )}
       >
+        {/* Monochrome grain only — the background itself is flat. Sits at a
+            negative z-index on its own layer, so it never repaints with
+            content. Pure CSS, no image request. */}
+        <div className="grain" aria-hidden />
+
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -109,11 +118,14 @@ export default function RootLayout({
           <TooltipProvider delayDuration={0}>
             <LenisProvider>
               {children}
-              <Navbar />
+              <Navbar
+                navItems={navItems.map((n) => ({ href: n.href, icon: n.icon, label: n.label }))}
+                socialNavItems={socialNavItems}
+              />
             </LenisProvider>
             <MagneticCursor />
             <ClickRipple />
-            <CommandMenu />
+            <CommandMenu socials={socialNavItems.map((s) => ({ label: s.label, href: s.href }))} />
             <SectionIndex />
             <HelloIntro />
           </TooltipProvider>

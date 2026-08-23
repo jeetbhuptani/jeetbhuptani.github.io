@@ -1,12 +1,8 @@
-import { Icons } from "@/components/icons";
-import { Certificate } from "crypto";
-import { HomeIcon, NotebookIcon } from "lucide-react";
-import Image from "next/image";
 
 export const DATA = {
   name: "Jeet Bhuptani",
   initials: "JB",
-  url: "https://jeetbhuptani.me",
+  url: "https://jeetbhuptani.tech",
   location: "Ahmedabad, GUJ, India",
   locationLink: "https://www.google.com/maps/place/ahmedabad",
   birthDate: "2004-08-01",
@@ -46,9 +42,12 @@ export const DATA = {
     "Canva",
   ],
   navbar: [
-    { href: "/", icon: HomeIcon, label: "Home" },
-    { href: "/blog", icon: NotebookIcon, label: "Blog" },
-    { href: "/certificate", icon: Icons.certificate , label: "Certificates" },
+    { href: "/", icon: "home", label: "Home" },
+    { href: "/work", icon: "briefcase", label: "Work" },
+    { href: "/bookshelf", icon: "library", label: "Bookshelf" },
+    { href: "/life", icon: "heart", label: "Life" },
+    { href: "/blog", icon: "notebook", label: "Blog" },
+    { href: "/certificate", icon: "certificate", label: "Certificates" },
   ],
   contact: {
     email: "jeet.work.id@gmail.com",
@@ -57,34 +56,34 @@ export const DATA = {
       GitHub: {
         name: "GitHub",
         url: "https://www.github.com/jeetbhuptani",
-        icon: Icons.github,
+        icon: "github",
 
         navbar: true,
       },
       LinkedIn: {
         name: "LinkedIn",
         url: "https://www.linkedin.com/in/jeetbhuptani",
-        icon: Icons.linkedin,
+        icon: "linkedin",
 
         navbar: true,
       },
       X: {
         name: "X",
         url: "https://www.twitter.com/jeetbhuptani",
-        icon: Icons.x,
+        icon: "x",
 
         navbar: true,
       },
       Resume:{
         name: "Resume",
         url: "https://bit.ly/jeetbhuptani-resume",
-        icon: Icons.resume,
+        icon: "resume",
         navbar: true,
       },
       email: {
         name: "Send Email",
         url: "mailto:jeet.work.id@gmail.com",
-        icon: Icons.email,
+        icon: "email",
 
         navbar: false,
       },
@@ -190,9 +189,9 @@ export const DATA = {
       ],
       links: [
         {
-          type: "Ignosis",
+          label: "Ignosis",
           href: "https://www.ignosis.ai/",
-          icon: <Icons.globe className="size-3" />,
+          icon: "globe",
         },
       ],
       image: "",
@@ -215,9 +214,9 @@ export const DATA = {
       ],
       links: [
         {
-          type: "Ignosis",
+          label: "Ignosis",
           href: "https://www.ignosis.ai/",
-          icon: <Icons.globe className="size-3" />,
+          icon: "globe",
         },
       ],
       image: "",
@@ -226,7 +225,7 @@ export const DATA = {
   ],
   projects: [
     {
-      title: "Artha AI",
+      label: "Artha AI",
       href: "https://arthaai-7x8z.onrender.com/",
       dates: "May 2025 - May 2025",
       active: true,
@@ -245,14 +244,14 @@ export const DATA = {
       ],
       links: [
         {
-          type: "Website",
+          label: "Website",
           href: "https://arthaai-7x8z.onrender.com",
-          icon: <Icons.globe className="size-3" />,
+          icon: "globe",
         },
         {
-          type: "Source",
+          label: "Source",
           href: "https://www.github.com/jeetbhuptani/arthaai",
-          icon: <Icons.github className="size-3" />,
+          icon: "github",
         }
       ],
       image: "",
@@ -280,14 +279,14 @@ export const DATA = {
       ],
       links: [
         {
-          type: "Website",
+          label: "Website",
           href: "https://smart-trip-planner-v1.vercel.app/",
-          icon: <Icons.globe className="size-3" />,
+          icon: "globe",
         },
         {
-          type: "Source",
+          label: "Source",
           href: "https://www.github.com/jeetbhuptani/smarttripplanner",
-          icon: <Icons.github className="size-3" />,
+          icon: "github",
         }
       ],
       image: "",
@@ -310,9 +309,9 @@ export const DATA = {
       ],
       links: [
         {
-          type: "Source",
+          label: "Source",
           href: "https://github.com/jeetbhuptani/medichainmvc",
-          icon: <Icons.github className="size-3" />,
+          icon: "github",
         },
       ],
       image: "",
@@ -335,9 +334,9 @@ export const DATA = {
       ],
       links: [
         {
-          type: "Source",
+          label: "Source",
           href: "https://github.com/jeetbhuptani/zen-z",
-          icon: <Icons.github className="size-3" />,
+          icon: "github",
         },
       ],
       image: "",
@@ -360,14 +359,14 @@ export const DATA = {
       ],
       links: [
         {
-          type: "Website",
+          label: "Website",
           href: "https://mern-crud-ewrj.onrender.com/",
-          icon: <Icons.globe className="size-3" />,
+          icon: "globe",
         },
         {
-          type: "Source",
+          label: "Source",
           href: "https://github.com/jeetbhuptani/mern-crud",
-          icon: <Icons.github className="size-3" />,
+          icon: "github",
         },
       ],
       image: "",
@@ -389,9 +388,9 @@ export const DATA = {
       ],
       links: [
         {
-          type: "Source",
+          label: "Source",
           href: "https://github.com/jeetbhuptani/thecookbook",
-          icon: <Icons.github className="size-3" />,
+          icon: "github",
         },
       ],
       image: "",
@@ -409,13 +408,13 @@ export const DATA = {
       image: "holbox.png",
       links: [
         {
-          title: "Github",
-          icon: <Icons.globe className="h-4 w-4" />,
+          label: "Github",
+          icon: "globe",
           href: "https://github.com/MILANBHADARKA/intellicruit",
         },
         {
-          title: "Devfolio",
-          icon: <Image src="/devfolio.svg" alt="Devfolio Logo" width={16}  height={16} className="h-4 w-4" />,
+          label: "Devfolio",
+          icon: "/devfolio.svg",
           href: "https://devfolio.co/projects/intellicruit-8ab9",
         },
       ],
@@ -430,12 +429,12 @@ export const DATA = {
         "ignosis.png",
       links: [
       {
-        title: "Github",
-        icon: <Icons.globe className="h-4 w-4" />,
+        label: "Github",
+        icon: "globe",
         href: "https://github.com/jeetbhuptani/arthaai",
       },{
-        title: "Artha AI",
-        icon: <Icons.globe className="h-4 w-4" />,
+        label: "Artha AI",
+        icon: "globe",
         href: "https://arthaai-7x8z.onrender.com/",
       },],
     },
@@ -448,8 +447,8 @@ export const DATA = {
       image:
         "./duhacks.png",
       links: [{
-        title: "Duhacks",
-        icon: <Icons.globe className="h-4 w-4" />,
+        label: "Duhacks",
+        icon: "globe",
         href: "https://duhacks.tech/",
       },],
     },
@@ -463,13 +462,13 @@ export const DATA = {
         "duhacks.png",
       links: [
         {
-          title: "Github",
-          icon: <Icons.github className="h-4 w-4" />,
+          label: "Github",
+          icon: "github",
           href: "https://github.com/karangondaliya/NourishNet",
         },
         {
-          title: "Devfolio",
-          icon: <Image src="/devfolio.svg" alt="Devfolio Logo" width={16}  height={16} className="h-4 w-4" />,
+          label: "Devfolio",
+          icon: "/devfolio.svg",
           href: "https://devfolio.co/projects/nourishnet-8909",
         },
       ],
@@ -485,9 +484,9 @@ export const DATA = {
       credentialId: "",
       links: [
         {
-          type: "Certificate",
+          label: "Certificate",
           href: "https://www.credly.com/badges/07d71884-6bc3-46b0-9b37-89afe39261e4/public_url",
-          icon: <Icons.globe className="size-3" />,
+          icon: "globe",
         },
       ],
     },
@@ -500,9 +499,9 @@ export const DATA = {
       credentialId: "dzSE06yTR_2M4K1o3H4OXg",
       links: [
         {
-          type: "Certificate",
+          label: "Certificate",
           href: "https://learn.nvidia.com/certificates?id=dzSE06yTR_2M4K1o3H4OXg",
-          icon: <Icons.globe className="size-3" />,
+          icon: "globe",
         },
       ],
     },
@@ -515,9 +514,9 @@ export const DATA = {
       credentialId: "",
       links: [
         {
-          type: "Certificate",
+          label: "Certificate",
           href: "https://www.credly.com/badges/e7eff2c3-8bd3-40bb-801b-74c49e83e2db/public_url",
-          icon: <Icons.globe className="size-3" />,
+          icon: "globe",
         },
       ],
     },
@@ -530,11 +529,11 @@ export const DATA = {
       credentialId: "jeet_bhuptani-rwd",
       links: [
         {
-          type: "Certificate",
+          label: "Certificate",
           href: "https://www.freecodecamp.org/certification/Jeet_Bhuptani/responsive-web-design",
-          icon: <Icons.globe className="size-3" />,
+          icon: "globe",
         },
       ],
     },
   ]
-} as const;
+};

@@ -1,6 +1,6 @@
 import BlurFade from "@/components/magicui/blur-fade";
 import { CertificateCard } from "@/components/certificate-card";
-import { DATA } from "@/data/resume";
+import { getCertificates } from "@/lib/content";
 
 const BLUR_FADE_DELAY = 0.04;
 
@@ -9,7 +9,8 @@ export const metadata = {
   description: "My professional certifications and achievements.",
 };
 
-export default function CertificatesPage() {
+export default async function CertificatesPage() {
+  const certificates = await getCertificates();
   return (
     <section id="certificates">
       <div className="space-y-12 w-full py-12">
@@ -30,7 +31,7 @@ export default function CertificatesPage() {
           </div>
         </BlurFade>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-2 max-w-[1200px] mx-auto">
-          {DATA.certificates.map((certificate, id) => (
+          {certificates.map((certificate, id) => (
             <BlurFade
               key={certificate.title}
               delay={BLUR_FADE_DELAY * 2 + id * 0.05}
@@ -38,10 +39,10 @@ export default function CertificatesPage() {
               <CertificateCard
                 title={certificate.title}
                 issuer={certificate.issuer}
-                date={certificate.date}
+                date={certificate.date_label}
                 description={certificate.description}
                 image={certificate.image}
-                credentialId={certificate.credentialId}
+                credentialId={certificate.credential_id}
                 links={certificate.links}
               />
             </BlurFade>

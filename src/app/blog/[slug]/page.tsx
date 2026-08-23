@@ -1,5 +1,5 @@
-import { getBlogPosts, getPost } from "@/data/blog";
-import { DATA } from "@/data/resume";
+import { getPosts, getPostBySlug } from "@/lib/content/posts";
+import { getProfile } from "@/lib/content";
 import { BlogIndexRail } from "@/components/blog-index-rail";
 import { TocRail } from "@/components/toc-rail";
 import { Reveal } from "@/components/motion/reveal";
@@ -10,7 +10,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export async function generateStaticParams() {
-  const posts = await getBlogPosts();
+  const posts = await getPosts();
   return posts.map((post) => ({ slug: post.slug }));
 }
 
@@ -19,12 +19,12 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }): Promise<Metadata | undefined> {
-  const post = await getPost(params.slug);
+  const [post, profile] = await Promise.all([getPostBySlug(params.slug), getProfile()]);
   if (!post) return;
   const { title, publishedAt: publishedTime, summary: description, image } = post.metadata;
   // When the post supplies its own image, use it; otherwise the
   // opengraph-image.tsx file convention generates one automatically.
-  const images = image ? [{ url: `${DATA.url}${image}` }] : undefined;
+  const images = image ? [{ url: `${profile.url}${image}` }] : undefined;
 
   return {
     title,
@@ -34,7 +34,7 @@ export async function generateMetadata({
       description,
       type: "article",
       publishedTime,
-      url: `${DATA.url}/blog/${post.slug}`,
+      url: `${profile.url}/blog/${post.slug}`,
       ...(images ? { images } : {}),
     },
     twitter: {
@@ -47,18 +47,18 @@ export async function generateMetadata({
 }
 
 export default async function Blog({ params }: { params: { slug: string } }) {
-  const post = await getPost(params.slug);
+  const [post, profile, allPosts] = await Promise.all([
+    getPostBySlug(params.slug),
+    getProfile(),
+    getPosts(),
+  ]);
   if (!post) notFound();
 
-  const allPosts = (await getBlogPosts()).sort(
-    (a, b) =>
-      new Date(b.metadata.publishedAt).getTime() - new Date(a.metadata.publishedAt).getTime()
-  );
   const headings = extractHeadings(post.source);
   const minutes = readingTime(post.source);
   const ogImage = post.metadata.image
-    ? `${DATA.url}${post.metadata.image}`
-    : `${DATA.url}/blog/${post.slug}/opengraph-image`;
+    ? `${profile.url}${post.metadata.image}`
+    : `${profile.url}/blog/${post.slug}/opengraph-image`;
 
   return (
     <main className="flex flex-col gap-8">
@@ -76,8 +76,8 @@ export default async function Blog({ params }: { params: { slug: string } }) {
             dateModified: post.metadata.publishedAt,
             description: post.metadata.summary,
             image: ogImage,
-            url: `${DATA.url}/blog/${post.slug}`,
-            author: { "@type": "Person", name: DATA.name },
+            url: `${profile.url}/blog/${post.slug}`,
+            author: { "@type": "Person", name: profile.name },
           }),
         }}
       />

@@ -1,0 +1,20 @@
+# Supabase project config.
+#
+# `project_id` is a local identifier only — it names the local Docker stack and
+# does NOT need to match the hosted project ref. Linking to the hosted project
+# is done with `supabase link --project-ref <ref>`, which writes to
+# supabase/.temp/ (gitignored).
+project_id = "jeetbhuptani-portfolio"
+
+[auth]
+# TOTP enrollment for /admin lives behind this. It is on by default on hosted
+# projects; declared here so the setting is visible in the repo rather than
+# being dashboard-only state.
+enable_signup = false
+
+[auth.mfa]
+max_enrolled_factors = 10
+
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true
