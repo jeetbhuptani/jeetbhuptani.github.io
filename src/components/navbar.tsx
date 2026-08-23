@@ -119,7 +119,7 @@ export default function Navbar({
 
   // In-page anchors, not content — they belong to the layout, not the database.
   const additionalNavItems = useMemo<NavLink[]>(() => [
-    { href: "/#projects", icon: "projects", label: "Projects" },
+    { href: "/#products", icon: "projects", label: "Products" },
     { href: "/#hackathons", icon: "trophy", label: "Hackathons" },
   ], []);
 

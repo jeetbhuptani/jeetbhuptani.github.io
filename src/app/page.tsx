@@ -2,13 +2,15 @@ import { Age } from "@/components/age";
 import { ASCII_AVATAR } from "@/data/ascii-avatar";
 import { ExperienceTimeline, type TimelineItem } from "@/components/experience-timeline";
 import { HackathonCard } from "@/components/hackathon-card";
+import { HackathonReel } from "@/components/home/hackathon-reel";
 import { ReactiveHero } from "@/components/hero/reactive-hero";
-import { LifeWall } from "@/components/life-wall";
+import { LifeLatest } from "@/components/home/life-latest";
 import { Magnetic } from "@/components/motion/magnetic";
-import { Reveal, StaggerGroup, StaggerItem } from "@/components/motion/reveal";
+import { Reveal } from "@/components/motion/reveal";
+import { TabPanels } from "@/components/home/tab-panels";
 import { ProjectCard } from "@/components/project-card";
 import { Section } from "@/components/section";
-import { Bookshelf } from "@/components/widgets/bookshelf";
+import { ReadingNow } from "@/components/widgets/reading-now";
 import { ContentIcon } from "@/components/icon-by-name";
 import { MoreLink } from "@/components/more-link";
 import { SkillGrid } from "@/components/skill-grid";
@@ -160,36 +162,9 @@ export default async function Page() {
         </Section>
       </Reveal>
 
-      {/* Community + Education */}
+      {/* Products — the things I’ve shipped on my own time */}
       <Reveal>
-        <Section id="community" label="Community">
-          <ExperienceTimeline items={volunteerItems} />
-        </Section>
-      </Reveal>
-      <Reveal>
-        <Section id="education" label="Education">
-          <ExperienceTimeline items={educationItems} />
-        </Section>
-      </Reveal>
-
-      {/* Skills — grouped by category, weighted by how much I actually use them */}
-      <Reveal>
-        <Section id="skills" label="Stack">
-          <SkillGrid skills={skills} />
-        </Section>
-      </Reveal>
-
-      {/* Bookshelf — teaser; the full shelf lives at /bookshelf */}
-      <Reveal>
-        <Section id="bookshelf" label="Bookshelf" title="Everything I’ve read">
-          <Bookshelf />
-          <MoreLink href="/bookshelf">Browse the shelves by genre</MoreLink>
-        </Section>
-      </Reveal>
-
-      {/* Projects */}
-      <Reveal>
-        <Section id="projects" label="Projects" title="Things I’ve built">
+        <Section id="products" label="Products" title="Things I’ve shipped">
           <div className="-mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 [-ms-overflow-style:none] [mask-image:linear-gradient(to_right,transparent,black_1.5rem,black_calc(100%-1.5rem),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {sideProjects.map((p) => (
               <div key={p.title} className="flex w-[280px] shrink-0 snap-start sm:w-[300px]">
@@ -210,21 +185,65 @@ export default async function Page() {
         </Section>
       </Reveal>
 
-      {/* Life */}
+      {/* Education + Community */}
       <Reveal>
-        <Section id="life" label="Life" title="The rest of it">
-          <LifeWall entries={life} />
-          <MoreLink href="/life">The people around the work</MoreLink>
+        <Section id="education" label="Education">
+          <ExperienceTimeline items={educationItems} />
+        </Section>
+      </Reveal>
+      <Reveal>
+        <Section id="community" label="Community">
+          <ExperienceTimeline items={volunteerItems} />
+        </Section>
+      </Reveal>
+
+      {/* Skills — grouped by category, weighted by how much I actually use them */}
+      <Reveal>
+        <Section id="skills" label="Stack">
+          <SkillGrid skills={skills} />
+        </Section>
+      </Reveal>
+
+      {/* Bookshelf + Life — one section, two tabs. Both have their own page;
+          on the home page they are teasers, not galleries. */}
+      <Reveal>
+        <Section id="offline" label="Away from the keyboard" title="What I’m into">
+          <TabPanels
+            tabs={[
+              {
+                id: "bookshelf",
+                label: "Bookshelf",
+                content: (
+                  <>
+                    <ReadingNow />
+                    <MoreLink href="/bookshelf">Browse the shelves by genre</MoreLink>
+                  </>
+                ),
+              },
+              {
+                id: "life",
+                label: "Life",
+                hint: life.length ? String(life.length) : undefined,
+                content: (
+                  <>
+                    <LifeLatest entries={life} />
+                    <MoreLink href="/life">The people and places I keep</MoreLink>
+                  </>
+                ),
+              },
+            ]}
+          />
         </Section>
       </Reveal>
 
       {/* Hackathons */}
       <Reveal>
         <Section id="hackathons" label="Hackathons" title="Building under pressure">
-          <ul className="ml-4 divide-y divide-dashed border-l border-border">
-            {hackathons.map((h) => (
+          <HackathonReel
+            items={hackathons.map((h) => (
               <HackathonCard
                 key={h.title + h.dates}
+                as="div"
                 title={h.title}
                 description={h.description}
                 location={h.location}
@@ -233,7 +252,7 @@ export default async function Page() {
                 links={h.links}
               />
             ))}
-          </ul>
+          />
         </Section>
       </Reveal>
 

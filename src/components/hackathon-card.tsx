@@ -4,6 +4,9 @@ import Link from "next/link";
 import { ContentIcon } from "@/components/icon-by-name";
 
 interface Props {
+  /** Root element. The home page reel wraps each card in an animated <li>, so
+   *  it renders the card as a plain <div> to avoid nesting a list item. */
+  as?: "li" | "div";
   title: string;
   description: string;
   dates: string;
@@ -17,6 +20,7 @@ interface Props {
 }
 
 export function HackathonCard({
+  as: Root = "li",
   title,
   description,
   dates,
@@ -25,7 +29,7 @@ export function HackathonCard({
   links,
 }: Props) {
   return (
-    <li className="relative ml-10 py-4">
+    <Root className="relative ml-10 py-4">
       <div className="absolute -left-16 top-2 flex items-center justify-center bg-white rounded-full">
         <Avatar className="border size-12 m-auto">
           <AvatarImage src={image ?? undefined} alt={title} className="object-contain" />
@@ -58,6 +62,6 @@ export function HackathonCard({
           ))}
         </div>
       )}
-    </li>
+    </Root>
   );
 }

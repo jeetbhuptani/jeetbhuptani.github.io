@@ -42,9 +42,12 @@ export function CommandMenu({
       { id: "top", label: "Top", hint: "h", group: "Navigate", run: () => scrollToId("top") },
       { id: "about", label: "About", hint: "a", group: "Navigate", run: () => scrollToId("about") },
       { id: "work", label: "Work", hint: "w", group: "Navigate", run: () => scrollToId("work") },
-      { id: "bookshelf", label: "Bookshelf", hint: "r", group: "Navigate", run: () => scrollToId("bookshelf") },
-      { id: "projects", label: "Projects", hint: "p", group: "Navigate", run: () => scrollToId("projects") },
-      { id: "life", label: "Life", hint: "l", group: "Navigate", run: () => scrollToId("life") },
+      { id: "products", label: "Products", hint: "p", group: "Navigate", run: () => scrollToId("products") },
+      // Bookshelf and Life are only a tab on the home page now; the full
+      // versions are real routes, so jump there rather than to the teaser.
+      { id: "bookshelf", label: "Bookshelf", hint: "r", group: "Navigate", run: () => (window.location.href = "/bookshelf") },
+      { id: "life", label: "Life", hint: "l", group: "Navigate", run: () => (window.location.href = "/life") },
+      { id: "hackathons", label: "Hackathons", hint: "k", group: "Navigate", run: () => scrollToId("hackathons") },
       { id: "contact", label: "Contact", hint: "c", group: "Navigate", run: () => scrollToId("contact") },
       { id: "blog", label: "Blog", hint: "b", group: "Navigate", run: () => (window.location.href = "/blog") },
     ];

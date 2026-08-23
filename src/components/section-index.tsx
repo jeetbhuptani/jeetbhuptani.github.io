@@ -3,13 +3,16 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
+/** Must match the section ids rendered by src/app/page.tsx — a dot whose
+ *  target no longer exists silently never highlights and jumps nowhere. */
 const SECTIONS = [
   { id: "hero", label: "top" },
   { id: "about", label: "about" },
   { id: "work", label: "work" },
-  { id: "bookshelf", label: "bookshelf" },
-  { id: "projects", label: "projects" },
-  { id: "life", label: "life" },
+  { id: "products", label: "products" },
+  { id: "skills", label: "stack" },
+  { id: "offline", label: "offline" },
+  { id: "hackathons", label: "hackathons" },
   { id: "contact", label: "contact" },
 ];
 
