@@ -1,4 +1,3 @@
-import { Certificate } from "crypto";
 import { GlobeIcon, MailIcon, Trophy } from "lucide-react";
 
 export type IconProps = React.HTMLAttributes<SVGElement>;
