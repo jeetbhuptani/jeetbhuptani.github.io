@@ -235,3 +235,48 @@ export async function getCurrentlyReading(): Promise<BooksResult> {
     return { status: "error", source: "none", books: [] };
   }
 }
+
+/**
+ * Splits a shelf into "reading now" plus genre shelves.
+ *
+ * Currently-reading books are pinned to the top — they are the only part of the
+ * page that changes week to week, and burying them inside whichever genre they
+ * happen to belong to made them the hardest thing to find. They are then held
+ * out of the genre shelves, because the same cover appearing twice on one page
+ * reads as a bug.
+ *
+ * Genres thinner than `minShelfSize` are pooled into one shelf so the page does
+ * not turn into a row of one-book shelves.
+ */
+export function buildShelves<T extends { title: string; status: string; genre?: string }>(
+  books: T[],
+  {
+    slugOf,
+    minShelfSize = 2,
+    miscLabel = "Everything else",
+  }: { slugOf: (title: string) => string; minShelfSize?: number; miscLabel?: string }
+): { reading: T[]; shelves: { key: string; items: T[] }[] } {
+  const reading = books.filter((b) => b.status === "reading");
+  const readingSlugs = new Set(reading.map((b) => slugOf(b.title)));
+  const shelved = books.filter((b) => !readingSlugs.has(slugOf(b.title)));
+
+  const byGenre = new Map<string, T[]>();
+  for (const book of shelved) {
+    const key = book.genre ?? miscLabel;
+    const bucket = byGenre.get(key);
+    if (bucket) bucket.push(book);
+    else byGenre.set(key, [book]);
+  }
+
+  const groups = Array.from(byGenre, ([key, items]) => ({ key, items }));
+  const thick = groups.filter((g) => g.items.length >= minShelfSize && g.key !== miscLabel);
+  const thin = groups.filter((g) => g.items.length < minShelfSize || g.key === miscLabel);
+
+  return {
+    reading,
+    shelves: [
+      ...thick.sort((a, b) => b.items.length - a.items.length),
+      ...(thin.length ? [{ key: miscLabel, items: thin.flatMap((g) => g.items) }] : []),
+    ],
+  };
+}

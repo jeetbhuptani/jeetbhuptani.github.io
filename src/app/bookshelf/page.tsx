@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { GenreShelf, applyOverrides } from "@/components/bookshelf/shelf";
 import { Reveal } from "@/components/motion/reveal";
 import { Section } from "@/components/section";
-import { getBookshelf } from "@/lib/books";
-import { bookSlug, getBookOverrides, groupOrdered } from "@/lib/content";
+import { buildShelves, getBookshelf } from "@/lib/books";
+import { bookSlug, getBookOverrides } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Bookshelf",
@@ -27,19 +27,12 @@ export default async function BookshelfPage() {
   const [shelf, overrides] = await Promise.all([getBookshelf(), getBookOverrides()]);
   const books = applyOverrides(shelf.books, overrides, bookSlug);
 
-  const reading = books.filter((b) => b.status === "reading");
   const rated = books.filter((b) => b.rating).length;
-
-  // Group by genre, then fold the thin shelves together.
-  const raw = groupOrdered(books, (b) => b.genre ?? MISC_SHELF, []);
-  const thick = raw.filter((g) => g.items.length >= MIN_SHELF_SIZE && g.key !== MISC_SHELF);
-  const thin = raw.filter((g) => g.items.length < MIN_SHELF_SIZE || g.key === MISC_SHELF);
-  const shelves = [
-    ...thick.sort((a, b) => b.items.length - a.items.length),
-    ...(thin.length
-      ? [{ key: MISC_SHELF, items: thin.flatMap((g) => g.items) }]
-      : []),
-  ];
+  const { reading, shelves } = buildShelves(books, {
+    slugOf: bookSlug,
+    minShelfSize: MIN_SHELF_SIZE,
+    miscLabel: MISC_SHELF,
+  });
 
   return (
     <main className="flex flex-col gap-14">
@@ -89,6 +82,7 @@ export default async function BookshelfPage() {
         <p className="text-sm text-muted-foreground">The shelf is empty right now.</p>
       ) : (
         <div className="space-y-10">
+          {reading.length ? <GenreShelf genre="Reading now" books={reading} /> : null}
           {shelves.map((s) => (
             <GenreShelf key={s.key} genre={s.key} books={s.items} />
           ))}

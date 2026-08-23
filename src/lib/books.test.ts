@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { normalizeHardcover, parseGoodreadsRss, normalizeShelf, pickGenre } from "./books";
+import {
+  buildShelves,
+  normalizeHardcover,
+  normalizeShelf,
+  parseGoodreadsRss,
+  pickGenre,
+} from "./books";
 
 describe("normalizeHardcover", () => {
   it("maps the live Hardcover currently-reading shape", () => {
@@ -126,5 +132,65 @@ describe("pickGenre", () => {
     expect(pickGenre({ Genre: [] })).toBeUndefined();
     expect(pickGenre(undefined)).toBeUndefined();
     expect(pickGenre({})).toBeUndefined();
+  });
+});
+
+describe("buildShelves", () => {
+  const slugOf = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const book = (title: string, status: string, genre?: string) =>
+    ({ title, status, genre }) as { title: string; status: string; genre?: string };
+
+  it("pins currently-reading books to their own group", () => {
+    const { reading } = buildShelves(
+      [book("A", "read", "Sci-Fi"), book("B", "reading", "Sci-Fi")],
+      { slugOf }
+    );
+    expect(reading.map((b) => b.title)).toEqual(["B"]);
+  });
+
+  it("never repeats a currently-reading book in a genre shelf", () => {
+    // The whole point of the split: "B" is on the Reading now shelf, so seeing
+    // it again under Sci-Fi would look like a duplicate render.
+    const { shelves } = buildShelves(
+      [book("A", "read", "Sci-Fi"), book("B", "reading", "Sci-Fi"), book("C", "read", "Sci-Fi")],
+      { slugOf }
+    );
+    const titles = shelves.flatMap((s) => s.items.map((b) => b.title));
+    expect(titles).not.toContain("B");
+    expect(titles.sort()).toEqual(["A", "C"]);
+  });
+
+  it("pools genres thinner than the minimum into one shelf", () => {
+    const { shelves } = buildShelves(
+      [
+        book("A", "read", "Sci-Fi"),
+        book("B", "read", "Sci-Fi"),
+        book("C", "read", "Poetry"),
+        book("D", "read"),
+      ],
+      { slugOf, minShelfSize: 2, miscLabel: "Everything else" }
+    );
+    expect(shelves.map((s) => s.key)).toEqual(["Sci-Fi", "Everything else"]);
+    expect(shelves[1].items.map((b) => b.title).sort()).toEqual(["C", "D"]);
+  });
+
+  it("orders thick shelves by size, largest first", () => {
+    const { shelves } = buildShelves(
+      [
+        book("A", "read", "Small"),
+        book("B", "read", "Small"),
+        book("C", "read", "Big"),
+        book("D", "read", "Big"),
+        book("E", "read", "Big"),
+      ],
+      { slugOf }
+    );
+    expect(shelves.map((s) => s.key)).toEqual(["Big", "Small"]);
+  });
+
+  it("returns no shelves when everything is currently being read", () => {
+    const { reading, shelves } = buildShelves([book("A", "reading", "Sci-Fi")], { slugOf });
+    expect(reading).toHaveLength(1);
+    expect(shelves).toEqual([]);
   });
 });
