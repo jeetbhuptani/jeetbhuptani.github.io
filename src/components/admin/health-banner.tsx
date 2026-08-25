@@ -75,3 +75,39 @@ export function PanelStatus({
     </span>
   );
 }
+
+/**
+ * Tables that exist but hold no rows.
+ *
+ * Distinct from the health banner above: nothing is broken here. But an empty
+ * editor and a broken one look identical, and the public site is meanwhile
+ * rendering committed fallback content for these — so the site looks populated
+ * while the database is bare. That gap is the confusing part, and it has a
+ * one-command fix.
+ */
+export function EmptyTablesNotice({ tables }: { tables: string[] }) {
+  if (!tables.length) return null;
+  return (
+    <div className="space-y-2 rounded-2xl border border-border bg-card p-4">
+      <p className="text-xs font-medium">
+        {tables.length} table{tables.length === 1 ? " is" : "s are"} empty.
+      </p>
+      <ul className="flex flex-wrap gap-1.5">
+        {tables.map((t) => (
+          <li
+            key={t}
+            className="rounded-md border border-border px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground"
+          >
+            {t}
+          </li>
+        ))}
+      </ul>
+      <p className="text-[11px] leading-relaxed text-muted-foreground">
+        The site is showing committed fallback content for these, so it looks fine from the
+        outside while there is nothing here to edit. Run{" "}
+        <code className="font-mono text-foreground">pnpm seed:full</code> to import that
+        content into the database, then edit it here.
+      </p>
+    </div>
+  );
+}
