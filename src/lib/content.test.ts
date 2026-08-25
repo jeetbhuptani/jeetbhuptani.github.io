@@ -2,6 +2,13 @@ import { describe, expect, it } from "vitest";
 
 import { bookSlug, groupOrdered } from "@/lib/content";
 import { SEED_IMPACT, SEED_WORK, TRACK_ORDER } from "@/lib/content/seed";
+import {
+  RESUME_HACKATHONS,
+  RESUME_NAV,
+  RESUME_PROJECTS,
+  RESUME_SOCIALS,
+  RESUME_TIMELINE,
+} from "@/lib/content/from-resume";
 
 describe("bookSlug", () => {
   it("is stable across punctuation and case", () => {
@@ -75,6 +82,35 @@ describe("work seed content", () => {
     for (const stat of SEED_IMPACT) {
       expect(stat.value).toBeTruthy();
       expect(stat.label).toBeTruthy();
+    }
+  });
+});
+
+describe("resume fallback projection", () => {
+  it("gives every project a title", () => {
+    // Artha AI shipped with `label:` instead of `title:` and rendered with a
+    // blank name for months. DATA.projects is mapped through `(p: any)`, so the
+    // compiler had nothing to check — this is the check.
+    for (const project of RESUME_PROJECTS) {
+      expect(project.title, `project ${project.id} has no title`).toBeTruthy();
+    }
+  });
+
+  it("gives every timeline entry and hackathon a name", () => {
+    for (const entry of RESUME_TIMELINE) {
+      expect(entry.org, `timeline ${entry.id} has no org`).toBeTruthy();
+    }
+    for (const hack of RESUME_HACKATHONS) {
+      expect(hack.title, `hackathon ${hack.id} has no title`).toBeTruthy();
+    }
+  });
+
+  it("points every social and nav item somewhere", () => {
+    for (const social of RESUME_SOCIALS) {
+      expect(social.url, `social ${social.name} has no url`).toBeTruthy();
+    }
+    for (const item of RESUME_NAV) {
+      expect(item.href, `nav ${item.label} has no href`).toBeTruthy();
     }
   });
 });
