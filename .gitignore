@@ -37,3 +37,10 @@ next-env.d.ts
 /dillionverma-portfolio-6ab0cf8
 /github-stats-terminal-style
 /temp
+docs/plans/2026-06-06-001-feat-portfolio-redesign-plan.md
+*/skills/
+
+# next-sitemap regenerates these on every postbuild; robots.txt is committed
+# because it is stable, the sitemaps churn with every content change.
+/public/sitemap.xml
+/public/sitemap-0.xml

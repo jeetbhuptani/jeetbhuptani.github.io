@@ -225,7 +225,7 @@ export const DATA = {
   ],
   projects: [
     {
-      label: "Artha AI",
+      title: "Artha AI",
       href: "https://arthaai-7x8z.onrender.com/",
       dates: "May 2025 - May 2025",
       active: true,
@@ -433,7 +433,7 @@ export const DATA = {
         icon: "globe",
         href: "https://github.com/jeetbhuptani/arthaai",
       },{
-        label: "Artha AI",
+        title: "Artha AI",
         icon: "globe",
         href: "https://arthaai-7x8z.onrender.com/",
       },],

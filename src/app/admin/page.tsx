@@ -24,26 +24,31 @@ import {
   TIMELINE_FIELDS,
   BLANKS,
 } from "@/components/admin/field-specs";
-import { HealthBanner, PanelStatus } from "@/components/admin/health-banner";
+import {
+  EmptyTablesNotice,
+  HealthBanner,
+  PanelStatus,
+} from "@/components/admin/health-banner";
 import { RecordEditor } from "@/components/admin/record-editor";
 import { ToastProvider } from "@/components/admin/toast";
+import { getAdminRows, getAdminSingleton } from "@/lib/content/admin";
 import { getContentHealth, type ContentHealth } from "@/lib/content/health";
 import { getBookshelf } from "@/lib/books";
-import {
-  bookSlug,
-  getBookOverrides,
-  getCertificates,
-  getHackathons,
-  getLife,
-  getNavItems,
-  getProfile,
-  getProjects,
-  getSkills,
-  getSocials,
-  getTimeline,
-  getWork,
-} from "@/lib/content";
-import { getPostRows } from "@/lib/content/posts";
+import { bookSlug } from "@/lib/content";
+import type {
+  BookOverride,
+  Certificate,
+  Hackathon,
+  LifeEntry,
+  NavItem,
+  Post,
+  Profile,
+  Project,
+  Skill,
+  SocialLink,
+  TimelineEntry,
+  WorkEntry,
+} from "@/lib/content/types";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getAdminState } from "@/lib/supabase/auth";
 
@@ -144,39 +149,73 @@ export default async function AdminPage() {
   }
 
   // Verified admin at AAL2 from here on.
-  // fresh=true: the editors must show what is actually in the database right
-  // now, never a cached copy — otherwise a save appears to have done nothing.
+  //
+  // These read the tables directly — service role, no `published` filter, no
+  // seed fallback — rather than going through the public content adapter. The
+  // adapter is built to hide problems from visitors; here every one of those
+  // kindnesses is a lie. See src/lib/content/admin.ts.
   const [
-    work,
-    life,
-    skills,
+    workRows,
+    lifeRows,
+    skillRows,
     shelf,
-    overrides,
-    profile,
-    socials,
-    navItems,
-    timeline,
-    projects,
-    hackathons,
-    certificates,
-    posts,
+    overrideRows,
+    profileRow,
+    socialRows,
+    navRows,
+    timelineRows,
+    projectRows,
+    hackathonRows,
+    certificateRows,
+    postRowsResult,
     health,
   ] = await Promise.all([
-    getWork(true),
-    getLife(true),
-    getSkills(true),
+    getAdminRows<WorkEntry>("work_entries"),
+    getAdminRows<LifeEntry>("life_entries"),
+    getAdminRows<Skill>("skills"),
     getBookshelf(),
-    getBookOverrides(true),
-    getProfile(true),
-    getSocials(true),
-    getNavItems(true),
-    getTimeline(true),
-    getProjects(true),
-    getHackathons(true),
-    getCertificates(true),
-    getPostRows(true),
+    getAdminRows<BookOverride>("book_overrides", null),
+    getAdminSingleton<Profile>("profile"),
+    getAdminRows<SocialLink>("social_links"),
+    getAdminRows<NavItem>("nav_items"),
+    getAdminRows<TimelineEntry>("timeline_entries"),
+    getAdminRows<Project>("projects"),
+    getAdminRows<Hackathon>("hackathons"),
+    getAdminRows<Certificate>("certificates"),
+    getAdminRows<Post>("posts"),
     getContentHealth(),
   ]);
+
+  const work = workRows.rows;
+  const life = lifeRows.rows;
+  const skills = skillRows.rows;
+  const socials = socialRows.rows;
+  const navItems = navRows.rows;
+  const timeline = timelineRows.rows;
+  const projects = projectRows.rows;
+  const hackathons = hackathonRows.rows;
+  const certificates = certificateRows.rows;
+  const posts = postRowsResult.rows;
+  const overrides = new Map(overrideRows.rows.map((o) => [o.slug, o]));
+  // No profile row yet is normal on a fresh table; the form opens on blanks.
+  const profile = (profileRow.row ?? BLANKS.profile) as Profile;
+
+  // Tables that exist but hold nothing. Worth calling out: an empty editor is
+  // correct, but indistinguishable from a broken one unless it says so.
+  const emptyTables = (
+    [
+      ["profile", profileRow.row ? 1 : 0],
+      ["social_links", socials.length],
+      ["nav_items", navItems.length],
+      ["timeline_entries", timeline.length],
+      ["projects", projects.length],
+      ["hackathons", hackathons.length],
+      ["certificates", certificates.length],
+      ["posts", posts.length],
+    ] as [string, number][]
+  )
+    .filter(([, n]) => n === 0)
+    .map(([t]) => t);
 
   const books = shelf.books.map((b) => ({
     slug: bookSlug(b.title),
@@ -189,6 +228,7 @@ export default async function AdminPage() {
     <ToastProvider>
       <main className="flex flex-col gap-8">
         <HealthBanner health={health} />
+        <EmptyTablesNotice tables={emptyTables} />
         <header className="flex items-start justify-between gap-4">
           <div className="space-y-1">
             <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">

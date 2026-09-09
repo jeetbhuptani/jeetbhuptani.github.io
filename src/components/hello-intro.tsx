@@ -1,20 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AppleHelloEffectEnglish } from "@/components/ui/apple-hello-effect";
 
 // Bump this key to force the intro to show again (e.g. after design changes).
-const SESSION_KEY = "hello-shown-v2";
+const SESSION_KEY = "hello-shown-v3";
+
+/** Speeds the handwriting up; the stock 3.5s draw is too long for an intro. */
+const DURATION_SCALE = 0.7;
+/** Beat between the last stroke landing and the overlay lifting. */
+const HOLD_MS = 400;
+/**
+ * Hard ceiling on the overlay. The normal dismissal is driven by the SVG's
+ * onAnimationComplete, which never fires if the tab is backgrounded mid-draw —
+ * so the timer stays as the thing that guarantees the site is reachable.
+ */
+const MAX_MS = (0.7 + 2.8) * DURATION_SCALE * 1000 + HOLD_MS + 1200;
 
 /**
- * Apple-"hello"-style intro (chanhdai-inspired). A cursive "hello" writes itself
- * in with a left-to-right reveal + an underline stroke, holds, then the overlay
- * lifts to reveal the site. Shows once per session. Reduced motion → a quick
- * fade, no wipe.
+ * Apple-"hello"-style intro. The word is drawn stroke-by-stroke as an SVG
+ * pathLength animation (see `ui/apple-hello-effect.tsx`), holds a beat, then
+ * the overlay lifts. Shows once per session. Reduced motion → the wordmark is
+ * drawn instantly and the overlay fades, no handwriting.
  */
 export function HelloIntro() {
   const reduce = useReducedMotion();
   const [show, setShow] = useState(false);
+  const holdRef = useRef<ReturnType<typeof setTimeout>>();
 
   // Decide whether to show, exactly once.
   //
@@ -34,9 +47,28 @@ export function HelloIntro() {
   // timer is always re-armed rather than only cleared.
   useEffect(() => {
     if (!show) return;
-    const t = setTimeout(() => setShow(false), reduce ? 900 : 2400);
+    const t = setTimeout(() => setShow(false), reduce ? 900 : MAX_MS);
     return () => clearTimeout(t);
   }, [show, reduce]);
+
+  useEffect(() => () => clearTimeout(holdRef.current), []);
+
+  // Skippable. The draw is ~3s of full-screen overlay; anyone who has seen it
+  // once this month should not have to sit through it to reach the page.
+  useEffect(() => {
+    if (!show) return;
+    const skip = () => setShow(false);
+    window.addEventListener("pointerdown", skip);
+    window.addEventListener("keydown", skip);
+    return () => {
+      window.removeEventListener("pointerdown", skip);
+      window.removeEventListener("keydown", skip);
+    };
+  }, [show]);
+
+  const handleDrawn = useCallback(() => {
+    holdRef.current = setTimeout(() => setShow(false), HOLD_MS);
+  }, []);
 
   return (
     <AnimatePresence>
@@ -47,23 +79,12 @@ export function HelloIntro() {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.55, ease: "easeInOut" } }}
         >
-          <div className="flex flex-col items-center">
-            <motion.span
-              className="text-glow select-none font-serif text-7xl italic leading-none text-foreground sm:text-9xl"
-              initial={reduce ? { opacity: 0 } : { clipPath: "inset(0 100% 0 0)" }}
-              animate={reduce ? { opacity: 1 } : { clipPath: "inset(0 0% 0 0)" }}
-              transition={{ duration: reduce ? 0.4 : 1.4, ease: [0.6, 0.05, 0.3, 1] }}
-            >
-              hello
-            </motion.span>
-            <motion.span
-              aria-hidden
-              className="mt-3 h-px bg-foreground/60"
-              initial={{ width: 0 }}
-              animate={{ width: reduce ? "60%" : "70%" }}
-              transition={{ duration: reduce ? 0.4 : 1, delay: reduce ? 0 : 0.5, ease: "easeOut" }}
-            />
-          </div>
+          <AppleHelloEffectEnglish
+            role="img"
+            className="stroke-glow h-20 w-auto px-6 text-foreground sm:h-28"
+            durationScale={reduce ? 0 : DURATION_SCALE}
+            onAnimationComplete={handleDrawn}
+          />
         </motion.div>
       ) : null}
     </AnimatePresence>

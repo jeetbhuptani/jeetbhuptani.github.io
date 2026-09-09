@@ -73,11 +73,16 @@ export async function getContentHealth(): Promise<ContentHealth> {
   const tables = await Promise.all(
     CONTENT_TABLES.map(async (table): Promise<TableHealth> => {
       try {
-        // head:true asks for the count and no rows, so the probe stays cheap
-        // even once these tables have real content in them.
+        // NOT head:true. A HEAD request has no response body, so supabase-js
+        // has nothing to parse the PostgREST error out of and hands back
+        // `{ data: null, error: null, count: null }` for a table that does not
+        // exist — which this function would then report as healthy with zero
+        // rows. That is precisely the failure it exists to catch, so it asks
+        // for one real row and reads the error off the body.
         const { count, error } = await supabase
           .from(table)
-          .select("*", { count: "exact", head: true });
+          .select("*", { count: "exact" })
+          .limit(1);
         if (error) {
           return { table, ok: false, count: null, code: error.code, message: error.message };
         }

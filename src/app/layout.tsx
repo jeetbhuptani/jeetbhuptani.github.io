@@ -79,6 +79,19 @@ export default async function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <meta name="theme-color" content="#100e0c" />
+        {/* Retires the stored "system" theme from when `enableSystem` was on.
+            next-themes still honours that string after the flag is removed, so
+            every returning visitor on a light-mode OS would keep resolving to
+            light and never see the dark default. Clearing it falls through to
+            `defaultTheme`; an explicit "light"/"dark" choice is left alone.
+            Must run before next-themes' own script (which renders in <body>),
+            hence a blocking script here rather than an effect. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(localStorage.getItem('theme')==='system')localStorage.removeItem('theme')}catch(e){}",
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -109,10 +122,13 @@ export default async function RootLayout({
             content. Pure CSS, no image request. */}
         <div className="grain" aria-hidden />
 
+        {/* No `enableSystem`. With it, next-themes resolves a first-time
+            visitor to their OS preference and `defaultTheme` only applies when
+            the OS expresses none — so the site rendered light on a light-mode
+            machine. Dark is the design; the toggle still opts out per-visitor. */}
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
-          enableSystem
           disableTransitionOnChange
         >
           <TooltipProvider delayDuration={0}>
