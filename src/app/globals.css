@@ -200,6 +200,20 @@
     }
   }
 
+  /* SVG-stroke twin of .text-glow. text-shadow does nothing to a stroked
+     path, so the hello wordmark needs a drop-shadow filter to match. */
+  .stroke-glow {
+    filter: none;
+  }
+  .dark .stroke-glow {
+    filter: drop-shadow(0 0 12px hsl(var(--foreground) / 0.3));
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dark .stroke-glow {
+      filter: drop-shadow(0 0 8px hsl(var(--foreground) / 0.22));
+    }
+  }
+
   /* Click-ripple dots (evilrabbit-style) — spawned imperatively, self-removing */
   .click-ripple-dot {
     position: fixed;
