@@ -166,6 +166,20 @@
     border-color: hsl(var(--foreground) / 0.22);
   }
 
+  /* --------------------------------------------------------------- /life album
+     A photographic print rather than a card: paper that sits a shade off the
+     page it rests on, a hairline edge, and no radius worth the name. The mat is
+     what makes the album read as objects laid out on a page instead of a grid
+     of components, so it deliberately does not use --card (identical to the
+     background in light mode, which would leave the prints edgeless). */
+  .print-mat {
+    background-color: hsl(42 45% 99.5%);
+    border-radius: 2px;
+  }
+  .dark .print-mat {
+    background-color: hsl(28 9% 11%);
+  }
+
   /* Hairline top edge that catches the "light" — one gradient, no element. */
   .edge-light {
     background-image: linear-gradient(

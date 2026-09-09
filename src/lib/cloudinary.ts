@@ -46,3 +46,44 @@ export function cldBlur(publicId: string): string {
   if (!CLOUD_NAME) return "";
   return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto:low,w_24,e_blur:200/${publicId}`;
 }
+
+/**
+ * Intrinsic pixel dimensions of an uploaded asset.
+ *
+ * The /life album lays every photograph out at its own aspect ratio, and
+ * `public_id` is the only thing stored in Postgres — so the shape has to come
+ * from Cloudinary. `fl_getinfo` is an ordinary delivery URL that answers with
+ * the asset's metadata as JSON instead of bytes: no API credentials, and it
+ * works for everything already uploaded, which a width/height column would not.
+ *
+ * Server-side only (it makes a request). Cached for a day because a public id
+ * is a content hash — different pixels are a different asset, so an id's
+ * dimensions never change.
+ */
+export async function cldDimensions(
+  publicId: string,
+  kind: "image" | "video" = "image"
+): Promise<{ width: number; height: number } | null> {
+  if (!CLOUD_NAME) return null;
+
+  try {
+    const res = await fetch(
+      `https://res.cloudinary.com/${CLOUD_NAME}/${kind}/upload/fl_getinfo/${publicId}`,
+      { next: { revalidate: 86_400 } }
+    );
+    if (!res.ok) return null;
+
+    // Images report both `input` and `output`; video only fills in some of it,
+    // so take whichever half actually carries the numbers.
+    const info = (await res.json()) as Record<string, { width?: number; height?: number }>;
+    for (const part of [info?.output, info?.input]) {
+      const { width, height } = part ?? {};
+      if (typeof width === "number" && typeof height === "number" && width > 0 && height > 0) {
+        return { width, height };
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
