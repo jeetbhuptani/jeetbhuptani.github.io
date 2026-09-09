@@ -259,12 +259,13 @@
     background-color: var(--shiki-light-bg);
   }
    
-  @media (prefers-color-scheme: dark) {
-    code[data-theme*=" "],
-    code[data-theme*=" "] span {
-      color: var(--shiki-dark);
-      background-color: var(--shiki-dark-bg);
-    }
+  /* Keyed to the `.dark` class, not `prefers-color-scheme`. The site theme is
+     class-based and no longer follows the OS, so a media query here would light-
+     theme every blog code block for a dark-site visitor on a light-mode machine. */
+  .dark code[data-theme*=" "],
+  .dark code[data-theme*=" "] span {
+    color: var(--shiki-dark);
+    background-color: var(--shiki-dark-bg);
   }
   
   code[data-line-numbers] {
