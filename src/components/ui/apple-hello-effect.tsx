@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
  * Ported from ncdai's shadcn registry item (chanhdai.com/r/apple-hello-effect)
  * onto this repo's `framer-motion` — the registry ships against the `motion`
  * package, and pulling in a second animation library for one component would
- * break the one-animation-library rule in CLAUDE.md.
+ * break this project's one-animation-library rule.
  *
  * The two paths are the real strokes of the wordmark: the `h` ascender first,
  * then a single unbroken stroke for the rest. Drawing is `pathLength`, so the
